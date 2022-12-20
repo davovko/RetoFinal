@@ -19,9 +19,12 @@ public class ProductServiceImplementation implements ProductService {
         Product productGmfExempt = productRepository.checkGmfExempt(product.getCustomer_id());
 
         if ( productGmfExempt == null || !product.isGmf_exempt()){
-            product.setAccount_number(newAccountNumber(product.getProduct_type_id()));
+            product.setAccount_number("xx");
             product.setStatus_account_id(1);
             product.setCreation_user_id(1);
+            productRepository.save(product);
+
+            product.setAccount_number( newAccountNumber(product.getProduct_id(), product.getProduct_type_id()));
 
             return productRepository.save(product);
         }
@@ -93,10 +96,9 @@ public class ProductServiceImplementation implements ProductService {
         throw new IllegalArgumentException(message);
     }
 
+    /*
     public String newAccountNumber(int product_type_id){
-
         int totalProducts = productRepository.countAccounts(product_type_id) + 1;
-
         String accountNumber = "";
 
         for (int i = 0; i < (8 - Integer.toString(totalProducts).length()); i++){
@@ -111,7 +113,26 @@ public class ProductServiceImplementation implements ProductService {
         }
 
         return accountNumber;
+    }*/
+
+    public String newAccountNumber(int product_id, int product_type_id){
+
+        String accountNumber = "";
+
+        for (int i = 0; i < (8 - Integer.toString(product_id).length()); i++){
+            accountNumber = accountNumber + "0";
+        }
+
+        switch (product_type_id){
+            case 1: accountNumber = "46" + accountNumber + product_id;
+                break;
+            case 2: accountNumber = "23" + accountNumber + product_id;
+                break;
+        }
+
+        return accountNumber;
     }
+
 
     public Product checkGmfExempt(int customer_id){
         return productRepository.checkGmfExempt(customer_id);
