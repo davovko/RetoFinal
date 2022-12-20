@@ -96,25 +96,6 @@ public class ProductServiceImplementation implements ProductService {
         throw new IllegalArgumentException(message);
     }
 
-    /*
-    public String newAccountNumber(int product_type_id){
-        int totalProducts = productRepository.countAccounts(product_type_id) + 1;
-        String accountNumber = "";
-
-        for (int i = 0; i < (8 - Integer.toString(totalProducts).length()); i++){
-            accountNumber = accountNumber + "0";
-        }
-
-        switch (product_type_id){
-            case 1: accountNumber = "46" + accountNumber + totalProducts;
-                break;
-            case 2: accountNumber = "23" + accountNumber + totalProducts;
-                break;
-        }
-
-        return accountNumber;
-    }*/
-
     public String newAccountNumber(int product_id, int product_type_id){
 
         String accountNumber = "";
