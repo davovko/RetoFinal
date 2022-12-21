@@ -35,10 +35,10 @@ public class TransactionServiceImplementation implements TransactionService  {
         double maxValue = oldProduct.get().isGmf_exempt() ? -3000000: -3000000 + (transaction.getTransaction_value() * -0.004);
         String message = "";
         Transaction gmfTransaction = new Transaction();
-        if(oldProduct.get().getStatus_account_id() == 2){
-            message = "No se puede realizar la transacción. No la cuenta está inactiva";
-
-        }else {
+        if(oldProduct.get().getStatus_account_id() == 2 && transaction.getTransaction_type_id() != 1){
+            message = "No se puede realizar la transacción. La cuenta está inactiva";
+        }
+        else {
             switch (transaction.getTransaction_type_id()){
                 case 1: // CONSIGNACION
                     newProduct.setBalance(oldProduct.get().getBalance() + transaction.getTransaction_value());
@@ -185,6 +185,7 @@ public class TransactionServiceImplementation implements TransactionService  {
             }
             //return transactionRepository.save(transaction);
         }
+
 
         throw new IllegalArgumentException(message);
     }
