@@ -47,18 +47,6 @@ public class WebSecurityConfig {
                 .build();
     }
 
-    /*
-    @Bean
-    UserDetailsService userDetailsService(){
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("admin")
-                .password(passwordEncoder().encode("123456"))
-                .roles()
-                .build()
-        );
-        return manager;
-    }*/
-
     @Bean
     AuthenticationManager authenticationManager(HttpSecurity http ) throws Exception{
         return http.getSharedObject(AuthenticationManagerBuilder.class)
