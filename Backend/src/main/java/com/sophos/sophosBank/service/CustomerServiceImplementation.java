@@ -1,7 +1,9 @@
 package com.sophos.sophosBank.service;
 
 import com.sophos.sophosBank.entity.Customer;
+import com.sophos.sophosBank.entity.Product;
 import com.sophos.sophosBank.repository.CustomerRepository;
+import com.sophos.sophosBank.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class CustomerServiceImplementation implements CustomerService{
 
     @Autowired
     CustomerRepository customerRepository;
+    @Autowired
+    ProductRepository productRepository;
 
     @Override
     public Customer createCustomer(Customer customer) {
@@ -95,10 +99,19 @@ public class CustomerServiceImplementation implements CustomerService{
 
     @Override
     public boolean deleteCustomerById(int customer_id) {
-        return getCustomerById(customer_id).map(customer -> {
-            customerRepository.deleteById(customer_id);
+
+        int activeProducts = productRepository.findAllActiveProductsByCustomerId(customer_id);
+
+        if(activeProducts == 0){
+            Optional<Customer> oldCustomer = customerRepository.findById(customer_id);
+            Customer newCustomer = oldCustomer.get();
+
+            newCustomer.setStatus(false);
+            customerRepository.save(newCustomer);
             return true;
-        }).orElse(false);
+        }
+        String message = "No se puede eliminar. El cliente aun tiene cuentas sin cancelar.";
+        throw new IllegalArgumentException(message);
     }
 
     public boolean checkAge(LocalDate date_of_birth){
