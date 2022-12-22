@@ -14,9 +14,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { AboutComponent } from './about/about.component';
 
-const appRoutes: Routes = [
-  {path: '', component: CustomersComponent},  
-  {path: 'login', component: LoginComponent},
+const appRoutes: Routes = [  
+  {path: '', component: LoginComponent},
+  {path: 'customers', component: CustomersComponent},  
   {path: 'about', component: AboutComponent},
   {path: 'products/:num', component: ProductsComponent},
   {path: 'transactions/:num', component: TransactionsComponent}
