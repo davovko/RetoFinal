@@ -1,0 +1,138 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row mt-5">
+                <h1>Movimientos de Cuenta N° {{productData?.account_number}}</h1>
+            </div>     
+            <div class="row">
+                <div class="col-md-8 mt-5">                
+                    <a class="btn btn-outline-secondary" href="#" [routerLink]="['/products/'+ customer_id]">Regresar</a>
+                    <button class="btn btn-outline-primary" (click)="openModal(content)">Realizar Transacción</button>
+                </div>
+                <div class="col-md-4">
+                    <table style="text-align: center;" class="table table-bordered border-primary mt-3">
+                        <thead>
+                            <tr>
+                                <th>Saldo</th>
+                                <th>Saldo diponible</th>
+                                <th>Estado</th>
+                                <th>Exenta GMF</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr >
+                                <td class="text-right" [ngClass]="{'text-danger': productData.balance < 0}">$ {{productData.balance | number:'1.2-2'}}</td>
+                                <td class="card-text">${{productData.available_balance | number:'1.2-2'}}</td>
+                                <td [ngSwitch]=productData.status_account_id>
+                                    <span *ngSwitchCase="1">ACTIVA</span>
+                                    <span *ngSwitchCase="2">INACTIVA</span>
+                                    <span *ngSwitchCase="3">CANCELADA</span>
+                                </td>
+                                <td class="card-text" *ngIf="productData.gmf_exempt;">Si</td>
+                                <td class="card-text" *ngIf="!productData.gmf_exempt;">No</td>
+                            </tr>
+                        </tbody>                    
+                    </table>
+                </div>
+            </div>      
+            
+            
+            
+            
+            <table class="table table-hover table-bordered mt-5">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                        <th>Movimiento Financiero</th>
+                        <th>Tipo de Movimiento</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let transaction of transactions' [ngClass]="{'table-danger': transaction.transaction_type_id != 1}">       
+                        <td>{{transaction.transaction_date | date:'yyyy/MM/dd HH:mm'}}</td>
+                        <td>{{transaction.description}}</td>
+                        <td [ngSwitch]=transaction.transaction_type_id>
+                            <span *ngSwitchCase="1">CRÉDITO</span>
+                            <span *ngSwitchCase="2">DÉBITO</span>
+                            <span *ngSwitchCase="3">DÉBITO</span>
+                        </td>
+                        <td [ngSwitch]=transaction.transaction_type_id>
+                            <span *ngSwitchCase="1">CONSIGNACIÓN</span>
+                            <span *ngSwitchCase="2">RETIRO</span>
+                            <span *ngSwitchCase="3">TRANSFERENCIA ENTRE CUENTAS</span>
+                        </td>                        
+                        <td>$ {{transaction.transaction_value | number:'1.2-2'}}</td>
+                    </tr>                    
+                </tbody>
+                
+            </table>
+
+        </div>
+        
+    </div>
+
+</div>
+
+
+<ng-template #content let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Nuevo Movimiento</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+        <p style="color: red;">*Campo requerido</p>
+		<form [formGroup]="form" (ngSubmit)="saveTransaction()">
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <label for="transactionTypeId">Seleccione Tipo de Transacción *</label>
+                    <div class="input-group">  
+                        <select (change)="enabledListOfAccount()" formControlName="transaction_type_id" id="transaction_type_id" class="form-select" aria-label="Default select example" required>
+                            <option [ngValue]="null" disabled>Selecione un tipo de transacción</option>
+                            <option [ngValue]="1">CONSIGNACIÓN</option>
+                            <option *ngIf="productData.status_account_id != 2;" [ngValue]="2">RETIRO</option>
+                            <option *ngIf="productData.status_account_id != 2;" [ngValue]="3">TRANSFERENCIA ENTRE CUENTAS</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <label for="transactionValue">Valor Transacción *</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">$</span>
+                        <input type="number" aria-label="Amount (to the nearest dollar)" min="2" id="transaction_value" class="form-control" formControlName="transaction_value" required/>                                          
+                      </div>
+                    <div class="input-group">
+                        
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <span class="input-group-text">Descripción *</span>
+                        <textarea min="2" id="description" class="form-control" formControlName="description" required aria-label="With textarea"></textarea>
+                      </div>
+                </div>
+                <div class="col-md-12">
+                    <label for="identificationType">Cuenta Destino</label>
+                    <div class="input-group">
+                        <select formControlName="destination_product_id" class="form-select" id="destination_product_id">                                                         
+                            <option [ngValue]="null" disabled>Selecione la cuenta destino</option>
+                            <option *ngFor='let product of products' [ngValue]="product.product_id">
+                                {{product.account_number}}
+                            </option>                      
+                          </select>
+                    </div>
+                </div>
+            </div>               
+            <div class="row mt-3">
+                <div class="text-end">
+                    <button [disabled]="form.invalid"  type="submit" class="btn btn-outline-dark" >Realizar Transacción</button>
+                </div>
+                
+            </div>    
+		</form>
+	</div>
+	<div class="modal-footer">
+		
+	</div>
+</ng-template>

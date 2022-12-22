@@ -1,0 +1,143 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row mt-5">
+                <h1>Clientes Sophos Bank</h1>
+            </div>
+            <div class="mt-5">
+                <button class="btn btn-outline-primary" (click)="openModal(content, true)">Crear Cliente</button>
+            </div>            
+            
+            <table class="table table-hover table-bordered mt-5">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tipo ID</th>
+                        <th>N° Identificación</th>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Email</th>
+                        <th>Fecha de Creación</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let customer of customers' >      
+                         
+                        <td>{{customer.customer_id}}</td>                 
+                        <td [ngSwitch]=customer.identification_type_Id>
+                            <span *ngSwitchCase="1">CC</span>
+                            <span *ngSwitchCase="2">CE</span>
+                            <span *ngSwitchCase="3">PA</span>
+                        </td>
+                        <td>{{customer.identification_number}}</td>
+                        <td>{{customer.last_name + " " + (customer.second_last_name == null ? "": customer.second_last_name)}}</td>
+                        <td>{{customer.first_name + " " + (customer.middle_name == null ? "" : customer.middle_name)}}</td>
+                        <td>{{customer.email}}</td>
+                        <td>{{customer.creation_date | date:'yyyy/MM/dd HH:mm'}}</td>
+                        <td>
+                            <div ngbDropdown class="d-inline-block">
+                                <button type="button" class="btn btn-outline-primary" id="dropdown1" ngbDropdownToggle>Gestionar</button>
+                                <div ngbDropdownMenu aria-labelledby="dropdown1">
+                                    <!-- items as buttons 
+                                    <button ngbDropdownItem (click)="openModal(content, false); updateCustomer(customer)">Ver Cliente</button> -->
+                                    <button ngbDropdownItem (click)="openModal(content, true); updateCustomer(customer)">Ver/Editar Cliente</button>                                    
+                                    <button ngbDropdownItem (click)="deleteCustomer(customer.customer_id)">Eliminar Cliente</button>
+                                    <div class="dropdown-divider"></div>
+                                    <button ngbDropdownItem [routerLink]="['/products/'+ customer.customer_id]">Ver Cuentas</button>
+                                </div>
+                            </div>
+                            
+                        </td>                        
+                    </tr>                    
+                </tbody>
+                
+            </table>
+
+        </div>
+        
+    </div>
+
+</div>
+
+<ng-template #content let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Datos Cliente</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+		<form [formGroup]="form" (ngSubmit)="saveCustomer()">
+            <div class="row mt-3">
+                <p style="color: red;">*Campo requerido</p>
+                <div class="col-md-6">
+                    <label for="identificationType">Tipo de Identificación *</label>
+                    <div class="input-group">
+                        <select required formControlName="identification_type_Id" class="form-select" aria-label="Default select example" id="identification_type_Id">
+                            <option [ngValue]="null" disabled>Selecione un tipo de identificación</option>
+                            <option [ngValue]="1">CC | CÉDULA DE CIUDADANIA</option>
+                            <option [ngValue]="2">CE | CÉDULA DE EXTRANJERIA</option>
+                            <option [ngValue]="3">PA | PASAPORTE</option>
+                          </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="identificationNumber">Número de Identificación *</label>
+                    <div class="input-group">
+                        <input required id="identification_number" class="form-control" placeholder="Número de Identificación" formControlName="identification_number"  />                        
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="lastName">Primer Apellido *</label>
+                    <div class="input-group">
+                        <input min="2" id="last_name" class="form-control" placeholder="Primer Apellido" formControlName="last_name" required />                        
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="SecondLastName">Segundo Apellido</label>
+                    <div class="input-group">
+                        <input min="2" id="second_last_name" class="form-control" placeholder="Segundo Apellido" formControlName="second_last_name" />                        
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="firstName">Primer Nombre *</label>
+                    <div class="input-group">
+                        <input min="2" id="first_name" class="form-control" placeholder="Primer Nombre" formControlName="first_name"  required />                        
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="middleName">Segundo Nombre</label>
+                    <div class="input-group">
+                        <input min="2" id="middle_name" class="form-control" placeholder="Segundo Nombre" formControlName="middle_name"  />                        
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="email">Email *</label>
+                    <div class="input-group">
+                        <input type="email" class="form-control" id="exampleFormControlInput1" formControlName="email" placeholder="nombre@correo.com" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="dateOfBirth">Fecha de Nacimiento *</label>
+                    <div class="input-group">
+                        <input type="date" id="date_of_birth" class="form-control" placeholder="yyyy-mm-dd" formControlName="date_of_birth" required />
+                    </div>
+                </div>
+            </div>    
+            <div class="row mt-3">
+                <div class="text-end">
+                    <button [disabled]="form.invalid" type="submit" class="btn btn-outline-dark" >Guardar</button>
+                </div>
+                
+            </div>    
+		</form>
+	</div>
+	<div class="modal-footer">
+		
+	</div>
+</ng-template>

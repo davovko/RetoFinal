@@ -1,0 +1,87 @@
+<div class="container">
+    <div class="row mt-5">
+        <h1>Productos del Cliente ID: </h1>
+    </div>
+    <div class="mt-5">
+        <a class="btn btn-outline-secondary" href="#">Regresar</a>
+        <button class="btn btn-outline-primary" (click)="openModal(content)">Crear Nuevo Producto</button>
+    </div>
+    <div class="row mt-3" *ngFor='let product of products'>
+        <div class="card" [ngClass]="{'border-success mb-3': product.gmf_exempt}">
+            <div class="card-header  text-center" *ngIf="product.product_type_id == 1;">               
+                <h4 [ngClass]="{'text-success': product.gmf_exempt}">CUENTA DE AHORROS</h4>
+            </div>
+            <div class="card-header text-center" *ngIf="product.product_type_id == 2;" >               
+                <h4>CUENTA CORRIENTE</h4>
+            </div>
+            
+            <div class="card-body" [ngClass]="{'text-success': product.gmf_exempt}">
+                <h5 class="card-title">Cuenta N° {{product.account_number}}</h5>
+                <p class="card-text" [ngClass]="{'text-danger': product.balance < 0}">Saldo: $ {{product.balance | number:'1.2-2'}}</p>
+                <p class="card-text">Saldo Disponible: ${{product.available_balance | number:'1.2-2'}}</p>
+                <p [ngSwitch]=product.status_account_id>Estado: 
+                    <span *ngSwitchCase="1">ACTIVA</span>
+                    <span *ngSwitchCase="2">INACTIVA</span>
+                    <span *ngSwitchCase="3">CANCELADA</span>
+                </p>
+                <p class="card-text" *ngIf="product.gmf_exempt;">Exenta GMF: Si</p>
+                <p class="card-text" *ngIf="!product.gmf_exempt;">Exenta GMF: No</p>
+                <div class="btn-group text-center" role="group">                    
+                    <button type="button" class="btn btn-dark" [routerLink]="['/transactions/'+ product.product_id]">Ver transacciones</button>
+                    <button type="button" class="btn btn-primary" *ngIf="product.status_account_id == 2" (click)="updateStatus(product.product_id, 1)">Activar Cuenta</button>
+                    <button type="button" class="btn btn-light" *ngIf="product.status_account_id == 1" (click)="updateStatus(product.product_id, 2)">Inactivar Cuenta</button>
+                    <button type="button" class="btn btn-warning" *ngIf="product.status_account_id != 3 && !product.gmf_exempt" (click)="updateGmfExempt(product.product_id)">Marcar Exenta GMF</button>
+                    <button type="button" class="btn btn-secondary" *ngIf="product.status_account_id != 3 && product.gmf_exempt" (click)="updateGmfExempt(product.product_id)">Desmarcar Exenta GMF</button>
+                    <button type="button" class="btn btn-danger" *ngIf="product.status_account_id != 3" (click)="updateStatus(product.product_id, 3)">Cancelar Producto</button>
+
+                </div>
+                
+            </div>
+            <div class="card-footer text-muted text-center">
+                Fecha de Creación: {{product.creation_date | date:'yyyy/MM/dd HH:mm'}}
+            </div>
+          </div>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+	<div class="modal-header">
+		<h4 class="modal-title" id="modal-basic-title">Nuevo Producto</h4>
+		<button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+	</div>
+	<div class="modal-body">
+		<form [formGroup]="form" (ngSubmit)="saveProduct()">
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <label for="productTypeId">Seleccione Tipo de Cuenta</label>
+                    <div class="input-group">
+                        <select formControlName="product_type_id" class="form-select" id="product_type_id" required>                            
+                            <option [ngValue]="null" disabled>Selecione un tipo de cuenta</option>
+                            <option [ngValue]="1">CUENTA DE AHORROS</option>
+                            <option [ngValue]="2">CUENTA CORRIENTE</option>
+                          </select>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <label for="gmfExempt"></label>
+                    <div class="input-group">
+                        <div class="form-check form-switch">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Cuenta Exenta GMF</label>
+                            <input class="form-check-input" type="checkbox" formControlName="gmf_exempt" id="gmf_exempt">
+                          </div>
+                    </div>
+                </div>
+            </div>               
+            <div class="row mt-3">
+                <div class="text-end">
+                    <button [disabled]="form.invalid"  type="submit" class="btn btn-outline-dark" >Crear Producto</button>
+                    
+                </div>
+                
+            </div>    
+		</form>
+	</div>
+	<div class="modal-footer">
+		
+	</div>
+</ng-template>
