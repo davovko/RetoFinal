@@ -1,5 +1,7 @@
-package com.sophos.sophosBank.security;
+package com.sophos.sophosBank.config;
 
+import com.sophos.sophosBank.security.JWTAuthenticationFilter;
+import com.sophos.sophosBank.security.JWTAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,10 +33,12 @@ public class WebSecurityConfig {
         jwtAuthenticationFilter.setFilterProcessesUrl("/login");
 
         return http
+                .cors()
+                .and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("customers")
-                .permitAll()
+                //.requestMatchers("v0/api/customers")
+                //.permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

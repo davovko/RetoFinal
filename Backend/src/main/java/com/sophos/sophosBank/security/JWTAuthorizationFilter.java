@@ -30,7 +30,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
 
     }
-    //AQUI SE AÑADE EL FILTRO PARA OMITIR LA AUTENTICACION EN CUSTOMERS
+    /*/AQUI SE AÑADE EL FILTRO PARA OMITIR LA AUTENTICACION EN CUSTOMERS
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request)
             throws ServletException {
@@ -38,5 +38,5 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         System.out.println(path);
         return "/v0/api/customers".equals(path);
     }
-
+    */
 }

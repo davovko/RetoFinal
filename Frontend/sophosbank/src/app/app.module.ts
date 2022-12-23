@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { CustomersComponent } from './customers/customers.component';
 
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProductsComponent } from './products/products.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -13,6 +13,9 @@ import { TransactionsComponent } from './transactions/transactions.component';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { AboutComponent } from './about/about.component';
+import { FormsModule }   from '@angular/forms';
+import { AuthInterceptor } from './helpers/auth.interceptor';
+
 
 const appRoutes: Routes = [  
   {path: '', component: LoginComponent},
@@ -36,11 +39,16 @@ const appRoutes: Routes = [
     HttpClientModule,
     NgbModule,
     ReactiveFormsModule,
+    FormsModule ,
     //AppRoutingModule,
     RouterModule.forRoot(appRoutes)
   ],
   exports: [RouterModule],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
