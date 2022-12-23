@@ -27,7 +27,7 @@ export class ProductsComponent implements OnInit {
   ){}
 
   ngOnInit(): void {
-    localStorage.clear();
+    localStorage.removeItem('customerId');
     this._activateRoute.params.subscribe((params: Params) => {
       this.customer_id = params['num'];
     });    

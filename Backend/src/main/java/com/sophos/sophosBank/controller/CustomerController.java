@@ -3,7 +3,9 @@ package com.sophos.sophosBank.controller;
 import com.sophos.sophosBank.entity.Customer;
 import com.sophos.sophosBank.entity.HttpResponse;
 import com.sophos.sophosBank.entity.Product;
+import com.sophos.sophosBank.security.TokenUtils;
 import com.sophos.sophosBank.service.CustomerService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +33,10 @@ public class CustomerController {
     }
 
     @PostMapping("/createCustomer")
-    public ResponseEntity<HttpResponse> createCustomer(@RequestBody Customer customer){
+    public ResponseEntity<HttpResponse> createCustomer(@RequestBody Customer customer, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
+        String bearerToken = request.getHeader("Authorization");
+
         try{
             response.success = true;
             response.data = customerService.createCustomer(customer);

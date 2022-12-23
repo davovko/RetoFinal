@@ -26,7 +26,7 @@ export class LoginComponent{
 
     this.loginService.login(this.creds)
       .subscribe(response => {
-        this.router.navigate(['/'])
+        this.router.navigate(['/customers'])
       })
   }
 

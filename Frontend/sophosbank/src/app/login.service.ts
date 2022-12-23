@@ -19,7 +19,7 @@ export class LoginService {
       const body = response.body;
       const headers = response.headers;
 
-      const bearerToken = headers.get('Authorization')!;
+      const bearerToken = headers.get('authorization')!;
       const token = bearerToken.replace('Bearer ',"");
 
       localStorage.setItem('token', token)
