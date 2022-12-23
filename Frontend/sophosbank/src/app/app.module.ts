@@ -15,14 +15,15 @@ import { LoginComponent } from './login/login.component';
 import { AboutComponent } from './about/about.component';
 import { FormsModule }   from '@angular/forms';
 import { AuthInterceptor } from './helpers/auth.interceptor';
+import { AuthGuard } from './helpers/auth.guard';
 
 
 const appRoutes: Routes = [  
   {path: '', component: LoginComponent},
-  {path: 'customers', component: CustomersComponent},  
-  {path: 'about', component: AboutComponent},
-  {path: 'products/:num', component: ProductsComponent},
-  {path: 'transactions/:num', component: TransactionsComponent}
+  {path: 'customers', component: CustomersComponent, canActivate: [AuthGuard]},  
+  {path: 'about', component: AboutComponent, canActivate: [AuthGuard]},
+  {path: 'products/:num', component: ProductsComponent, canActivate: [AuthGuard]},
+  {path: 'transactions/:num', component: TransactionsComponent, canActivate: [AuthGuard]}
   ]
 
 @NgModule({

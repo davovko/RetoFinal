@@ -21,7 +21,9 @@ public class CustomerController {
     CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getCustomers(){
+    public ResponseEntity<List<Customer>> getCustomers(HttpServletRequest request){
+
+        String bearerToken = request.getHeader("Authorization");
         return new ResponseEntity<>(customerService.getAllCustomers(), HttpStatus.OK);
     }
 
