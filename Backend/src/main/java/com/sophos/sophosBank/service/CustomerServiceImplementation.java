@@ -1,12 +1,12 @@
 package com.sophos.sophosBank.service;
 
 import com.sophos.sophosBank.entity.Customer;
-import com.sophos.sophosBank.entity.Product;
+import com.sophos.sophosBank.security.UserDetailServiceImplementation;
 import com.sophos.sophosBank.repository.CustomerRepository;
 import com.sophos.sophosBank.repository.ProductRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,9 +25,11 @@ public class CustomerServiceImplementation implements CustomerService{
     CustomerRepository customerRepository;
     @Autowired
     ProductRepository productRepository;
+    @Autowired
+    UserDetailServiceImplementation UserDetailServiceImplementation;
 
     @Override
-    public Customer createCustomer(Customer customer) {
+    public Customer createCustomer(Customer customer, HttpServletRequest request) {
         boolean adult = checkAge(customer.getDate_of_birth());
         boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number(), customer.getIdentification_type_Id(), 0);
         boolean email = checkEmail(customer.getEmail(), 0);
@@ -42,7 +44,7 @@ public class CustomerServiceImplementation implements CustomerService{
             customer.setSecond_last_name(customer.getSecond_last_name() != null ? customer.getSecond_last_name().trim().toUpperCase() : null);
 
             customer.setEmail(customer.getEmail().trim().toLowerCase());
-            customer.setCreation_user_id(1);
+            customer.setCreation_user_id(UserDetailServiceImplementation.userActive(request));
             return customerRepository.save(customer);
         }
         ;
@@ -65,7 +67,7 @@ public class CustomerServiceImplementation implements CustomerService{
     }
 
     @Override
-    public Customer updateCustomer(Customer customer, int customer_id) {
+    public Customer updateCustomer(Customer customer, int customer_id, HttpServletRequest request) {
         boolean adult = checkAge(customer.getDate_of_birth());
         boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number(), customer.getIdentification_type_Id(), customer_id);
         boolean email = checkEmail(customer.getEmail(), customer_id);
@@ -85,7 +87,7 @@ public class CustomerServiceImplementation implements CustomerService{
             newCustomer.setEmail(customer.getEmail().trim().toLowerCase());
             newCustomer.setDate_of_birth((customer.getDate_of_birth()));
             newCustomer.setModification_date(LocalDateTime.now());
-            newCustomer.setModification_user_id(1);
+            newCustomer.setModification_user_id(UserDetailServiceImplementation.userActive(request));
 
             return customerRepository.save(newCustomer);
         }

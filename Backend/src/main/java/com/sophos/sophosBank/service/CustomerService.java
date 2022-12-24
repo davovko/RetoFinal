@@ -1,14 +1,17 @@
 package com.sophos.sophosBank.service;
 
 import com.sophos.sophosBank.entity.Customer;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
 
 public interface CustomerService {
-    public Customer createCustomer(Customer customer);
+    public Customer createCustomer(Customer customer, HttpServletRequest request) throws UnsupportedEncodingException;
     public List<Customer> getAllCustomers();
     public Optional<Customer> getCustomerById(int customer_id);
-    public Customer updateCustomer(Customer customer, int customer_id);
+    public Customer updateCustomer(Customer customer, int customer_id, HttpServletRequest request);
     public boolean deleteCustomerById(int customer_id);
 }

@@ -54,4 +54,8 @@ public class UserDetailsImplementation implements UserDetails {
     public String getName(){
         return user.getName();
     }
+
+    public int getUserId(){
+        return user.getUser_id();
+    }
 }

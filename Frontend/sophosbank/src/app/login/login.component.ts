@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent{
+export class LoginComponent implements OnInit{
   creds: Credentials = {
     email: '',
     password: ''
@@ -19,6 +19,12 @@ export class LoginComponent{
     private loginService: LoginService,
     private router: Router,
     ){    
+  }
+
+  ngOnInit(): void {
+    if(this.loginService.getToken()){
+      this.router.navigate(['/customers']);
+    }
   }
 
   login(form: NgForm){

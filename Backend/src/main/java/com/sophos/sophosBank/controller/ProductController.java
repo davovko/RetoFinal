@@ -3,6 +3,7 @@ package com.sophos.sophosBank.controller;
 import com.sophos.sophosBank.entity.Product;
 import com.sophos.sophosBank.entity.HttpResponse;
 import com.sophos.sophosBank.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +32,11 @@ public class ProductController {
     }
 
     @PostMapping("/createProduct")
-    public ResponseEntity<HttpResponse> createProduct(@RequestBody Product product){
+    public ResponseEntity<HttpResponse> createProduct(@RequestBody Product product, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
         try{
             response.success = true;
-            response.data = productService.createProduct(product);
+            response.data = productService.createProduct(product, request);
             return new ResponseEntity<HttpResponse>(response, HttpStatus.CREATED);
         }catch (IllegalArgumentException e){
             response.success = false;
@@ -45,11 +46,11 @@ public class ProductController {
     }
 
     @PatchMapping("/updateGmfExempt/{product_id}")
-    public ResponseEntity<HttpResponse> updateGmfExempt(@PathVariable("product_id") int product_id){
+    public ResponseEntity<HttpResponse> updateGmfExempt(@PathVariable("product_id") int product_id, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
         try{
             response.success = true;
-            response.data = productService.updateGmfExempt(product_id).isGmf_exempt();
+            response.data = productService.updateGmfExempt(product_id, request).isGmf_exempt();
             return new ResponseEntity<HttpResponse>(response, HttpStatus.CREATED);
         }catch (IllegalArgumentException e){
             response.success = false;
@@ -60,11 +61,11 @@ public class ProductController {
     }
 
     @PatchMapping("/updateStatusAccount/{product_id}/{status_account_id}")
-    public ResponseEntity<HttpResponse> updateStatusAccount(@PathVariable("product_id") int product_id, @PathVariable("status_account_id") int status_account_id){
+    public ResponseEntity<HttpResponse> updateStatusAccount(@PathVariable("product_id") int product_id, @PathVariable("status_account_id") int status_account_id, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
         try{
             response.success = true;
-            response.data = productService.updateStatusAccount(status_account_id, product_id).getStatus_account_id();
+            response.data = productService.updateStatusAccount(status_account_id, product_id,request).getStatus_account_id();
             return new ResponseEntity<HttpResponse>(response, HttpStatus.CREATED);
         }catch (IllegalArgumentException e){
             response.success = false;

@@ -2,6 +2,8 @@ package com.sophos.sophosBank.service;
 
 import com.sophos.sophosBank.entity.Product;
 import com.sophos.sophosBank.repository.ProductRepository;
+import com.sophos.sophosBank.security.UserDetailServiceImplementation;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +15,17 @@ import java.util.Optional;
 public class ProductServiceImplementation implements ProductService {
     @Autowired
     ProductRepository productRepository;
+    @Autowired
+    UserDetailServiceImplementation UserDetailServiceImplementation;
     @Override
-    public Product createProduct(Product product) {
+    public Product createProduct(Product product, HttpServletRequest request) {
 
         Product productGmfExempt = productRepository.checkGmfExempt(product.getCustomer_id());
 
         if ( productGmfExempt == null || !product.isGmf_exempt()){
             product.setAccount_number("xx");
             product.setStatus_account_id(1);
-            product.setCreation_user_id(1);
+            product.setCreation_user_id(UserDetailServiceImplementation.userActive(request));
             productRepository.save(product);
 
             product.setAccount_number( newAccountNumber(product.getProduct_id(), product.getProduct_type_id()));
@@ -45,7 +49,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    public Product updateGmfExempt(int product_id){
+    public Product updateGmfExempt(int product_id, HttpServletRequest request){
 
         Optional<Product> oldProduct = productRepository.findById(product_id);
         Product productGmfExempt = productRepository.checkGmfExempt(oldProduct.get().getCustomer_id());
@@ -56,7 +60,7 @@ public class ProductServiceImplementation implements ProductService {
             newProduct.setGmf_exempt(newState);
             newProduct.setAvailable_balance(oldProduct.get().getBalance() <= 0 ? 0 : newState ? oldProduct.get().getBalance() : Math.round(oldProduct.get().getBalance() - oldProduct.get().getBalance() * 0.004));
             newProduct.setModification_date(LocalDateTime.now());
-            newProduct.setModification_user_id(1);
+            newProduct.setModification_user_id(UserDetailServiceImplementation.userActive(request));
 
             return productRepository.save(newProduct);
 
@@ -67,7 +71,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    public Product updateStatusAccount(int status_account_id, int product_id){
+    public Product updateStatusAccount(int status_account_id, int product_id, HttpServletRequest request){
 
         Optional<Product> oldProduct = productRepository.findById(product_id);
         String message;
@@ -77,7 +81,7 @@ public class ProductServiceImplementation implements ProductService {
             Product newProduct = oldProduct.get();
             newProduct.setStatus_account_id(status_account_id);
             newProduct.setModification_date(LocalDateTime.now());
-            newProduct.setModification_user_id(1);
+            newProduct.setModification_user_id(UserDetailServiceImplementation.userActive(request));
 
             if (status_account_id != 3){ // activar o desactivar
                 return productRepository.save(newProduct);

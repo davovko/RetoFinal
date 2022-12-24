@@ -1,9 +1,9 @@
 package com.sophos.sophosBank.controller;
 
-import com.sophos.sophosBank.entity.Product;
 import com.sophos.sophosBank.entity.Transaction;
 import com.sophos.sophosBank.entity.HttpResponse;
 import com.sophos.sophosBank.service.TransactionService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +25,11 @@ public class TransactionController {
     }
 
     @PostMapping("/createTransaction")
-    public ResponseEntity<HttpResponse> createProduct(@RequestBody Transaction transaction){
+    public ResponseEntity<HttpResponse> createProduct(@RequestBody Transaction transaction, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
         try{
             response.success = true;
-            response.data = transactionService.createTransaction(transaction);
+            response.data = transactionService.createTransaction(transaction, request);
             return new ResponseEntity<HttpResponse>(response, HttpStatus.CREATED);
         }catch (IllegalArgumentException e){
             response.success = false;
