@@ -63,11 +63,11 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{customer_id}")
-    public ResponseEntity deleteCustomerById(@PathVariable("customer_id") int customer_id){
+    public ResponseEntity deleteCustomerById(@PathVariable("customer_id") int customer_id, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
         try{
             response.success = true;
-            response.data = customerService.deleteCustomerById(customer_id);
+            response.data = customerService.deleteCustomerById(customer_id, request);
             return new ResponseEntity<HttpResponse>(response, HttpStatus.CREATED);
         }catch (IllegalArgumentException e){
             response.success = false;

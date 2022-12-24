@@ -43,7 +43,10 @@ public class TransactionServiceImplementation implements TransactionService  {
 
         Transaction gmfTransaction = new Transaction();
         if(!oldProduct.get().isGmf_exempt()){
-
+            gmfTransaction.setTransaction_type_id(2);
+            gmfTransaction.setProduct_id(oldProduct.get().getProduct_id());
+            gmfTransaction.setDescription("COBRO GMF / 4x1000");
+            gmfTransaction.setTransaction_value(transaction.getTransaction_value() * 0.004);
         }
 
         if(oldProduct.get().getStatus_account_id() == 2 && transaction.getTransaction_type_id() != 1){
@@ -70,10 +73,6 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 transactionRepository.save(transaction);
 
                                 if(!oldProduct.get().isGmf_exempt()){
-                                    gmfTransaction.setTransaction_type_id(2);
-                                    gmfTransaction.setProduct_id(oldProduct.get().getProduct_id());
-                                    gmfTransaction.setDescription("COBRO GMF / 4x1000");
-                                    gmfTransaction.setTransaction_value(transaction.getTransaction_value() * 0.004);
                                     transactionRepository.save(gmfTransaction);
                                 }
                                 return transaction;
@@ -98,10 +97,6 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 transactionRepository.save(transaction);
 
                                 if(!oldProduct.get().isGmf_exempt()){
-                                    gmfTransaction.setTransaction_type_id(2);
-                                    gmfTransaction.setProduct_id(oldProduct.get().getProduct_id());
-                                    gmfTransaction.setDescription("COBRO GMF / 4x1000");
-                                    gmfTransaction.setTransaction_value(transaction.getTransaction_value() * 0.004);
                                     transactionRepository.save(gmfTransaction);
                                 }
                                 return transaction;
@@ -139,10 +134,6 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 transactionRepository.save(transaction);
 
                                 if(!oldProduct.get().isGmf_exempt()){
-                                    gmfTransaction.setTransaction_type_id(2);
-                                    gmfTransaction.setProduct_id(oldProduct.get().getProduct_id());
-                                    gmfTransaction.setDescription("COBRO GMF / 4x1000");
-                                    gmfTransaction.setTransaction_value(transaction.getTransaction_value() * 0.004);
                                     transactionRepository.save(gmfTransaction);
                                 }
 
@@ -168,10 +159,6 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 transactionRepository.save(transaction);
 
                                 if(!oldProduct.get().isGmf_exempt()){
-                                    gmfTransaction.setTransaction_type_id(2);
-                                    gmfTransaction.setProduct_id(oldProduct.get().getProduct_id());
-                                    gmfTransaction.setDescription("COBRO GMF / 4x1000");
-                                    gmfTransaction.setTransaction_value(transaction.getTransaction_value() * 0.004);
                                     transactionRepository.save(gmfTransaction);
                                 }
 

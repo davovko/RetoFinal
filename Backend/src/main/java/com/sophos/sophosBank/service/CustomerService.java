@@ -13,5 +13,5 @@ public interface CustomerService {
     public List<Customer> getAllCustomers();
     public Optional<Customer> getCustomerById(int customer_id);
     public Customer updateCustomer(Customer customer, int customer_id, HttpServletRequest request);
-    public boolean deleteCustomerById(int customer_id);
+    public boolean deleteCustomerById(int customer_id, HttpServletRequest request);
 }

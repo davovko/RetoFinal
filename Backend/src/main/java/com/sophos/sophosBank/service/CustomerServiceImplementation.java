@@ -100,7 +100,7 @@ public class CustomerServiceImplementation implements CustomerService{
     }
 
     @Override
-    public boolean deleteCustomerById(int customer_id) {
+    public boolean deleteCustomerById(int customer_id, HttpServletRequest request) {
 
         int activeProducts = productRepository.findAllActiveProductsByCustomerId(customer_id);
 
@@ -109,6 +109,7 @@ public class CustomerServiceImplementation implements CustomerService{
             Customer newCustomer = oldCustomer.get();
 
             newCustomer.setStatus(false);
+            newCustomer.setModification_user_id(UserDetailServiceImplementation.userActive(request));
             customerRepository.save(newCustomer);
             return true;
         }
