@@ -50,7 +50,6 @@ export class TransactionsComponent implements OnInit {
   getProductById(){
     this.productsService.getProductById(this.product_id).subscribe(data => {
       this.productData = data; 
-      console.log(data)
     })
   }
 

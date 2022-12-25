@@ -21,8 +21,8 @@
                         </thead>
                         <tbody>
                             <tr >
-                                <td class="text-right" [ngClass]="{'text-danger': productData.balance < 0}">$ {{productData.balance | number:'1.2-2'}}</td>
-                                <td class="card-text">${{productData.available_balance | number:'1.2-2'}}</td>
+                                <td class="text-right" [ngClass]="{'text-danger': productData.balance < 0}">$ {{productData?.balance! | number:'1.2-2'}}</td>
+                                <td class="card-text">${{productData?.available_balance | number:'1.2-2'}}</td>
                                 <td [ngSwitch]=productData.status_account_id>
                                     <span *ngSwitchCase="1">ACTIVA</span>
                                     <span *ngSwitchCase="2">INACTIVA</span>

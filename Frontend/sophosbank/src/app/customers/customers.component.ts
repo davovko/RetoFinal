@@ -34,7 +34,7 @@ export class CustomersComponent implements OnInit{
   ){ }
 
   ngOnInit(): void {
-    this.getCustomers();
+    this.getCustomers();  
   }  
   
   openModal(content: any, formEnable: boolean){

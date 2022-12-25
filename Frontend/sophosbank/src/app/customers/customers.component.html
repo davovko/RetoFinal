@@ -39,8 +39,6 @@
                             <div ngbDropdown class="d-inline-block">
                                 <button type="button" class="btn btn-outline-primary" id="dropdown1" ngbDropdownToggle>Gestionar</button>
                                 <div ngbDropdownMenu aria-labelledby="dropdown1">
-                                    <!-- items as buttons 
-                                    <button ngbDropdownItem (click)="openModal(content, false); updateCustomer(customer)">Ver Cliente</button> -->
                                     <button ngbDropdownItem (click)="openModal(content, true); updateCustomer(customer)">Ver/Editar Cliente</button>                                    
                                     <button ngbDropdownItem (click)="deleteCustomer(customer.customer_id)">Eliminar Cliente</button>
                                     <div class="dropdown-divider"></div>

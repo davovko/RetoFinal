@@ -24,15 +24,14 @@ export class LoginComponent implements OnInit{
   ngOnInit(): void {
     if(this.loginService.getToken()){
       this.router.navigate(['/customers']);
+      this.ngOnInit
     }
   }
 
-  login(form: NgForm){
-    console.log('form value: ', form.value)
-
+  logIn(form: NgForm){
     this.loginService.login(this.creds)
       .subscribe(response => {
-        this.router.navigate(['/customers'])
+        this.router.navigate(['/customers'])   
       })
   }
 

@@ -107,7 +107,6 @@ export class ProductsComponent implements OnInit {
     this.productService.getAllProductsByCustomerId(id)
     .subscribe(data => {
       this.products = data;   
-      console.log(data)
     })
 
   }
