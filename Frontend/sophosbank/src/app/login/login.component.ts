@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { LoginService } from '../login.service';
 import { Credentials } from '../models/credentials';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -30,8 +31,23 @@ export class LoginComponent implements OnInit{
 
   logIn(form: NgForm){
     this.loginService.login(this.creds)
-      .subscribe(response => {
-        this.router.navigate(['/customers'])   
+      .subscribe(response => {        
+        if(response == null){
+          Swal.fire({
+            icon: 'success',
+            title: 'Bienvenido',
+            showConfirmButton: false,
+            timer: 1800
+          })
+          this.router.navigate(['/customers'])
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Usuarios o contraseña incorrectos',
+            showConfirmButton: false,
+            timer: 1800
+          })
+        }  
       })
   }
 
