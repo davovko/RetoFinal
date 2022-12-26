@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.el.parser.Token;
+import org.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -44,7 +45,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication authResult) throws IOException, ServletException {
         UserDetailsImplementation userDetails = (UserDetailsImplementation) authResult.getPrincipal();
         String token = TokenUtils.createToken(userDetails.getName(), userDetails.getUserId(), userDetails.getUsername());
-
+        //response.getWriter().write("gf");
         response.addHeader("Authorization" , "Bearer " + token);
         response.getWriter().flush();
 

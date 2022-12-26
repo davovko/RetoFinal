@@ -16,7 +16,7 @@
           </ul>
         </div>
         <div class="navbar-nav ms-auto">
-          <a disabled class="nav-item nav-link" *ngIf="userName != ''" >Bienvenido {{userName.toUpperCase()}}</a>          
+          <a disabled class="nav-item nav-link" *ngIf="userName != ''" >Bienvenido {{userName | uppercase}}</a>          
           <a (click)="logOut()" class="nav-item nav-link" *ngIf="userName != ''" >Cerrar Sesión</a>
       </div>
       </div>

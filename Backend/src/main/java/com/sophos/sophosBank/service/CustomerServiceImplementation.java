@@ -143,12 +143,12 @@ public class CustomerServiceImplementation implements CustomerService{
 
     public boolean checkEmail(String email, int customer_id){
         boolean response = true;
-        Customer customer = customerRepository.findCustomerByEmail(email);
+        Optional<Customer> customer = Optional.ofNullable(customerRepository.findCustomerByEmail(email));
 
         if(customer != null){
-            if(customer.getEmail().equals(email) && customer_id == 0){
+            if(customer.get().getEmail().equals(email) && customer_id == 0){
                 response = false;
-            } else if(customer.getEmail().equals(email) && customer.getCustomer_id() != customer_id ){
+            } else if(customer.get().getEmail().equals(email) && customer.get().getCustomer_id() != customer_id ){
                 response = false;
             }
         }

@@ -31,7 +31,8 @@ export class LoginComponent implements OnInit{
 
   logIn(form: NgForm){
     this.loginService.login(this.creds)
-      .subscribe(response => {        
+      .subscribe(response => {  
+        console.log(response)      
         if(response == null){
           Swal.fire({
             icon: 'success',

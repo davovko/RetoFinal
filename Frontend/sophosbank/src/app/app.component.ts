@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 export class AppComponent implements OnInit{
   title = 'sophosbank';
   userName: string = "";
+  
 
   constructor(    
     private loginService: LoginService,
@@ -19,6 +20,8 @@ export class AppComponent implements OnInit{
 
   ngOnInit(): void {
     var token =  this.loginService.getToken();
+    this.loginService.userName.subscribe( data => this.userName = data)  
+    /*
     if(token){
       var base64Url = token.split('.')[1];
       var base64 = base64Url.replace('-', '+').replace('_', '/');      
@@ -27,8 +30,7 @@ export class AppComponent implements OnInit{
       localStorage.setItem('userName', obj.name)
 
       this.userName = localStorage.getItem('userName') || "";      
-
-    }      
+    } */     
   }
 
   logOut(){

@@ -3,16 +3,19 @@ import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpInterceptor
+  HttpInterceptor,
+  HttpErrorResponse
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, retry, throwError } from 'rxjs';
 import { LoginService } from '../login.service';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
-    private loginService: LoginService
+    private loginService: LoginService,
+    private router: Router,
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -22,8 +25,17 @@ export class AuthInterceptor implements HttpInterceptor {
       const cloned = request.clone({
         headers: request.headers.set('Authorization', `Bearer ${token}`)
       })
-      return next.handle(cloned)
+
+      return next.handle(cloned).pipe(retry(1),catchError((error: HttpErrorResponse) =>{
+      
+        this.router.navigate(['/']);
+        return throwError("")
+      }));
     }    
-    return next.handle(request);
+    return next.handle(request).pipe(catchError((error: HttpErrorResponse) =>{
+      
+      this.router.navigate(['/customers']);
+      return throwError("")
+    }));
   }
 }
