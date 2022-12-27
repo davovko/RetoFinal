@@ -22,7 +22,7 @@ export class CustomerService {
       return this.http.post<any>('/api/customers/createCustomer', customer)
     }
 
-    update(id: number, customer: any){
+    update({ id, customer }: { id: number; customer: any; }){
       return this.http.put<any>('/api/customers/updateCustomer/' + id, customer)
     }
 

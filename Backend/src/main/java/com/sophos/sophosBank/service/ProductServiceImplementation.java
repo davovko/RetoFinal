@@ -69,7 +69,6 @@ public class ProductServiceImplementation implements ProductService {
         message = productGmfExempt != null ? "No se puede modificar ya que la cuenta " + productGmfExempt.getAccount_number() + " ya se encuentra exenta GMF." : "";
         throw new IllegalArgumentException(message);
     }
-
     @Override
     public Product updateStatusAccount(int status_account_id, int product_id, HttpServletRequest request){
 
@@ -99,7 +98,7 @@ public class ProductServiceImplementation implements ProductService {
         }
         throw new IllegalArgumentException(message);
     }
-
+    @Override
     public String newAccountNumber(int product_id, int product_type_id){
 
         String accountNumber = "";
@@ -118,8 +117,4 @@ public class ProductServiceImplementation implements ProductService {
         return accountNumber;
     }
 
-
-    public Product checkGmfExempt(int customer_id){
-        return productRepository.checkGmfExempt(customer_id);
-    }
 }

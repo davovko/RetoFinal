@@ -46,7 +46,7 @@ export class CustomersComponent implements OnInit{
     const values = this.form.value;
 
     if(this.customerInEditon){
-      this.customerService.update(values.customer_id, values)
+      this.customerService.update({ id: values.customer_id, customer: values })
     .subscribe(data => {
       if(data.success){
         this.getCustomers();

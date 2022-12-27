@@ -29,6 +29,16 @@ public class CustomerServiceImplementation implements CustomerService{
     UserDetailServiceImplementation UserDetailServiceImplementation;
 
     @Override
+    public List<Customer> getAllCustomers() {
+        return customerRepository.findAll();
+    }
+
+    @Override
+    public Optional<Customer> getCustomerById(int customer_id) {
+        return customerRepository.findById(customer_id);
+    }
+
+    @Override
     public Customer createCustomer(Customer customer, HttpServletRequest request) {
         boolean adult = checkAge(customer.getDate_of_birth());
         boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number(), customer.getIdentification_type_Id(), 0);
@@ -54,16 +64,6 @@ public class CustomerServiceImplementation implements CustomerService{
         message += !validEmail ? "El email ingresado no tiene el formato válido.": "";
         message += !validName ? "La extensión del Primer Nombre y del Primer Apellido NO puede ser menor a 2 caracteres.": "";
         throw new IllegalArgumentException(message);
-    }
-
-    @Override
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
-    }
-
-    @Override
-    public Optional<Customer> getCustomerById(int customer_id) {
-        return customerRepository.findById(customer_id);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class CustomerServiceImplementation implements CustomerService{
         String message = "No se puede eliminar. El cliente aun tiene cuentas sin cancelar.";
         throw new IllegalArgumentException(message);
     }
-
+    @Override
     public boolean checkAge(LocalDate date_of_birth){
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -124,38 +124,37 @@ public class CustomerServiceImplementation implements CustomerService{
 
         return age.getYears() >= 18;
     }
-
-
+    @Override
     public boolean checkIdentificationNumber(String identification_number, int identification_type_Id, int customer_id){
         boolean response = true;
-        Customer customer = customerRepository.findCustomerByIdentificationNumber(identification_number);
+        Customer customer = customerRepository.findCustomerByIdentificationNumber(identification_number, identification_type_Id);
 
         if(customer != null){
-            if(customer.getIdentification_number().equals(identification_number) && customer.getIdentification_type_Id() == identification_type_Id && customer_id == 0){
+            if(customer.getIdentification_number().equals(identification_number) && customer_id == 0){
                 response = false;
-            }else if(customer.getIdentification_number().equals(identification_number) && customer.getIdentification_type_Id() == identification_type_Id && customer.getCustomer_id() != customer_id ){
+            }else if(customer.getIdentification_number().equals(identification_number) && customer.getCustomer_id() != customer_id ){
                 response = false;
             }
         }
 
         return response ;
     }
-
+    @Override
     public boolean checkEmail(String email, int customer_id){
         boolean response = true;
-        Optional<Customer> customer = Optional.ofNullable(customerRepository.findCustomerByEmail(email));
+        Customer customer = customerRepository.findCustomerByEmail(email);
 
         if(customer != null){
-            if(customer.get().getEmail().equals(email) && customer_id == 0){
+            if(customer.getEmail().equals(email) && customer_id == 0){
                 response = false;
-            } else if(customer.get().getEmail().equals(email) && customer.get().getCustomer_id() != customer_id ){
+            } else if(customer.getEmail().equals(email) && customer.getCustomer_id() != customer_id ){
                 response = false;
             }
         }
 
         return response;
     }
-
+    @Override
     public boolean validEmail(String email){
         Pattern pattern = Pattern
                 .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
