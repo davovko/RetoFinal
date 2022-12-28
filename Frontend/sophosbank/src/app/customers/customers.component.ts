@@ -113,10 +113,12 @@ export class CustomersComponent implements OnInit{
       if (result.isConfirmed) {
         this.customerService.delete(id)
         .subscribe(data => {
-          this.getCustomers();
-          Swal.fire('Cliente eliminado!', '', 'success') ;},
-          error => {
-            Swal.fire('El cliente no se puede eliminar', 'El cliente aun no tiene todos sus productos cancelados', 'info')
+          if(data.success){
+            this.getCustomers();
+          Swal.fire('Cliente eliminado!', '', 'success') ;
+        }else{
+          Swal.fire('El cliente no se puede eliminar', 'El cliente aun no tiene todos sus productos cancelados', 'error')
+        }
           })
         
       }

@@ -1,8 +1,10 @@
 package com.sophos.sophosBank.service;
 
+import com.sophos.sophosBank.components.Validations;
 import com.sophos.sophosBank.entity.Customer;
 import com.sophos.sophosBank.repository.CustomerRepository;
 import com.sophos.sophosBank.repository.ProductRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.*;
+
 @RunWith(MockitoJUnitRunner.class)
 class CustomerServiceImplementationTest {
 
@@ -28,245 +32,13 @@ class CustomerServiceImplementationTest {
     @Mock
     ProductRepository productRepositoryMock;
     @Mock
-    com.sophos.sophosBank.security.UserDetailServiceImplementation UserDetailServiceImplementation;
+    Validations validationsMock;
+    @Mock
+    com.sophos.sophosBank.security.UserDetailServiceImplementation userDetailServiceImplementation;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void validEmail() {
-        String email = "davo.vko@gmail.com";
-
-        boolean response = customerServiceImplementation.validEmail(email);
-
-        Assertions.assertTrue(response);
-    }
-
-    @Test
-    void invalidEmail() {
-        String email = "davo.vko@gmailcom";
-
-        boolean response = customerServiceImplementation.validEmail(email);
-
-        Assertions.assertFalse(response);
-    }
-
-    @Test
-    void checkAgeWhenCustomerIsYounger() {
-        LocalDate date_of_birth = LocalDate.parse("2020-11-18");
-
-        boolean response = customerServiceImplementation.checkAge(date_of_birth);
-
-        Assertions.assertFalse(response, "Cliente menor de edad");
-    }
-
-    @Test
-    void checkAgeWhenCustomerIsAdult() {
-        LocalDate date_of_birth = LocalDate.parse("1991-11-18");
-
-        boolean response = customerServiceImplementation.checkAge(date_of_birth);
-
-        Assertions.assertTrue(response, "Cliente mayor de edad");
-    }
-
-    @Test
-    void checkEmailWhenIsCreationCustomerAndEmailDoesntExist() {
-
-        String email = "pepe.perez@gmail.com";
-        Customer mockCustomer = null;
-
-        Mockito.when(customerRepositoryMock.findCustomerByEmail(email)).thenReturn(mockCustomer);
-        int customerId = 0;
-
-        boolean response = customerServiceImplementation.checkEmail(email,customerId);
-
-        Assertions.assertTrue(response);
-    }
-
-    @Test
-    void checkEmailWhenIsCreationCustomerAndEmailExists() {
-
-        String email = "pepe.perez@gmail.com";
-        Customer mockCustomer = new Customer();
-        mockCustomer.setCustomer_id(24);
-        mockCustomer.setIdentification_type_Id(1);
-        mockCustomer.setIdentification_number("1085244930");
-        mockCustomer.setFirst_name("PEPE");
-        mockCustomer.setLast_name("PEREZ");
-        mockCustomer.setEmail("pepe.perez@gmail.com");
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setStatus(true);
-
-        Mockito.when(customerRepositoryMock.findCustomerByEmail(email)).thenReturn(mockCustomer);
-        int customerId = 0;
-
-        boolean response = customerServiceImplementation.checkEmail(email,customerId);
-
-        Assertions.assertFalse(response);
-    }
-
-    @Test
-    void checkEmailWhenCustomerIsUpdatedAndEmailNotExist() {
-
-        String email = "pepe.perez@gmail.com";
-        Customer mockCustomer = null;
-
-        Mockito.when(customerRepositoryMock.findCustomerByEmail(email)).thenReturn(mockCustomer);
-        int customerId = 24;
-
-        boolean response = customerServiceImplementation.checkEmail(email,customerId);
-
-        Assertions.assertTrue(response);
-    }
-
-    @Test
-    void checkEmailWhenCustomerIsUpdatedAndEmailDoesntExistInAnotherUser() {
-
-        String email = "davo.vko@gmail.com";
-        Customer mockCustomer = new Customer();
-        mockCustomer.setCustomer_id(24);
-        mockCustomer.setIdentification_type_Id(1);
-        mockCustomer.setIdentification_number("1085292930");
-        mockCustomer.setFirst_name("DAVID");
-        mockCustomer.setLast_name("VELASCO");
-        mockCustomer.setEmail("davo.vko@gmail.com");
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setStatus(true);
-
-        Mockito.when(customerRepositoryMock.findCustomerByEmail(email)).thenReturn(mockCustomer);
-        int customerId = 24;
-
-        boolean response = customerServiceImplementation.checkEmail(email,customerId);
-
-        Assertions.assertTrue(response);
-    }
-
-    @Test
-    void checkEmailWhenCustomerIsUpdatedAndEmailExistInAnotherUser() {
-
-        String email = "pepe.perez@gmail.com";
-        Customer mockCustomer = new Customer();
-        mockCustomer.setCustomer_id(25);
-        mockCustomer.setIdentification_type_Id(1);
-        mockCustomer.setIdentification_number("1085293330");
-        mockCustomer.setFirst_name("PEPE");
-        mockCustomer.setLast_name("PEREZ");
-        mockCustomer.setEmail("pepe.perez@gmail.com");
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setStatus(true);
-
-        Mockito.when(customerRepositoryMock.findCustomerByEmail(email)).thenReturn(mockCustomer);
-        int customerId = 24;
-
-        boolean response = customerServiceImplementation.checkEmail(email,customerId);
-
-        Assertions.assertFalse(response);
-    }
-    @Test
-    void checkIdentificationNumberWhenIsCreationCustomerAndIdentificationNumberDoesntExist() {
-
-        String identificationNumber = "1085292999";
-        int identification_type_Id = 1;
-        Customer mockCustomer = null;
-
-        Mockito.when(customerRepositoryMock.findCustomerByIdentificationNumber(identificationNumber, identification_type_Id)).thenReturn(mockCustomer);
-        int customerId = 0;
-
-        boolean response = customerServiceImplementation.checkIdentificationNumber(identificationNumber, identification_type_Id,customerId);
-
-        Assertions.assertTrue(response);
-    }
-
-    @Test
-    void checkIdentificationNumberWhenIsCreationCustomerAndIdentificationNumberExists() {
-
-        String identificationNumber = "1085292930";
-        int identification_type_Id = 1;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setCustomer_id(24);
-        mockCustomer.setIdentification_type_Id(1);
-        mockCustomer.setIdentification_number("1085292930");
-        mockCustomer.setFirst_name("PEPE");
-        mockCustomer.setLast_name("PEREZ");
-        mockCustomer.setEmail("pepe.perez@gmail.com");
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setStatus(true);
-
-        Mockito.when(customerRepositoryMock.findCustomerByIdentificationNumber(identificationNumber, identification_type_Id)).thenReturn(mockCustomer);
-        int customerId = 0;
-
-        boolean response = customerServiceImplementation.checkIdentificationNumber(identificationNumber, identification_type_Id,customerId);
-
-        Assertions.assertFalse(response);
-    }
-
-    @Test
-    void checkIdentificationNumberWhenCustomerIsUpdatedAndIdentificationNumberNotExist() {
-
-        String identificationNumber = "1085292944";
-        int identification_type_Id = 1;
-        Customer mockCustomer = null;
-
-        Mockito.when(customerRepositoryMock.findCustomerByIdentificationNumber(identificationNumber, identification_type_Id)).thenReturn(mockCustomer);
-        int customerId = 24;
-
-        boolean response = customerServiceImplementation.checkIdentificationNumber(identificationNumber, identification_type_Id,customerId);
-
-        Assertions.assertTrue(response);
-    }
-
-    @Test
-    void checkIdentificationNumberWhenCustomerIsUpdatedAndIdentificationNumberDoesntExistInAnotherUser() {
-
-        String identificationNumber = "10862727389";
-        int identification_type_Id = 1;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setCustomer_id(24);
-        mockCustomer.setIdentification_type_Id(1);
-        mockCustomer.setIdentification_number("1085292930");
-        mockCustomer.setFirst_name("DAVID");
-        mockCustomer.setLast_name("VELASCO");
-        mockCustomer.setEmail("davo.vko@gmail.com");
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setStatus(true);
-
-        Mockito.when(customerRepositoryMock.findCustomerByIdentificationNumber(identificationNumber, identification_type_Id)).thenReturn(mockCustomer);
-        int customerId = 24;
-
-        boolean response = customerServiceImplementation.checkIdentificationNumber(identificationNumber, identification_type_Id,customerId);
-
-        Assertions.assertTrue(response);
-    }
-
-    @Test
-    void checkIdentificationNumberWhenCustomerIsUpdatedAndIdentificationNumberExistInAnotherUser() {
-
-        String identificationNumber = "1085293330";
-        int identification_type_Id = 1;
-        Customer mockCustomer = new Customer();
-        mockCustomer.setCustomer_id(25);
-        mockCustomer.setIdentification_type_Id(1);
-        mockCustomer.setIdentification_number("1085293330");
-        mockCustomer.setFirst_name("PEPE");
-        mockCustomer.setLast_name("PEREZ");
-        mockCustomer.setEmail("pepe.perez@gmail.com");
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setDate_of_birth(LocalDate.now());
-        mockCustomer.setStatus(true);
-
-        Mockito.when(customerRepositoryMock.findCustomerByIdentificationNumber(identificationNumber, identification_type_Id)).thenReturn(mockCustomer);
-        int customerId = 24;
-
-        boolean response = customerServiceImplementation.checkIdentificationNumber(identificationNumber, identification_type_Id,customerId);
-
-        Assertions.assertFalse(response);
     }
 
     @Test
@@ -279,7 +51,6 @@ class CustomerServiceImplementationTest {
         mockCustomer1.setFirst_name("PEPE");
         mockCustomer1.setLast_name("PEREZ");
         mockCustomer1.setEmail("pepe.perez@gmail.com");
-        mockCustomer1.setDate_of_birth(LocalDate.now());
         mockCustomer1.setDate_of_birth(LocalDate.now());
         mockCustomer1.setStatus(true);
 
@@ -303,11 +74,32 @@ class CustomerServiceImplementationTest {
 
         List<Customer> response = customerServiceImplementation.getAllCustomers();
 
-        Assertions.assertEquals(2, response.size());
+        Assertions.assertTrue(mockListCustomers.size() == response.size() );
+        Assertions.assertTrue(mockListCustomers.containsAll(response) && response.containsAll(mockListCustomers));
     }
     @Test
     void getAllCustomerById(){
 
+        Optional<Customer> mockCustomer = Optional.of(new Customer());
+        mockCustomer.get().setCustomer_id(25);
+        mockCustomer.get().setIdentification_type_Id(1);
+        mockCustomer.get().setIdentification_number("1085293330");
+        mockCustomer.get().setFirst_name("PEPE");
+        mockCustomer.get().setLast_name("PEREZ");
+        mockCustomer.get().setEmail("pepe.perez@gmail.com");
+        mockCustomer.get().setDate_of_birth(LocalDate.now());
+        mockCustomer.get().setStatus(true);
+
+        int customerId = 25;
+
+        Mockito.when(customerRepositoryMock.findById(customerId)).thenReturn(mockCustomer);
+
+        Optional<Customer> response = customerServiceImplementation.getCustomerById(customerId);
+
+        Assertions.assertEquals(mockCustomer, response);
+    }
+    @Test
+    void allValidationsTrue(){
         Customer mockCustomer = new Customer();
         mockCustomer.setCustomer_id(25);
         mockCustomer.setIdentification_type_Id(1);
@@ -318,13 +110,58 @@ class CustomerServiceImplementationTest {
         mockCustomer.setDate_of_birth(LocalDate.now());
         mockCustomer.setDate_of_birth(LocalDate.now());
         mockCustomer.setStatus(true);
+        Mockito.when(validationsMock.checkAge(LocalDate.now())).thenReturn(true);
+        Mockito.when(validationsMock.checkIdentificationNumber(anyString(), anyInt(),anyInt())).thenReturn(true);
+        Mockito.when(validationsMock.checkEmail(anyString(), anyInt())).thenReturn(true);
+        Mockito.when(validationsMock.validEmail(anyString())).thenReturn(true);
 
-        int customerId = 25;
+        String response = customerServiceImplementation.allValidations(mockCustomer);
 
-        Mockito.when(customerRepositoryMock.findById(customerId)).thenReturn(Optional.of(mockCustomer));
+        Assertions.assertEquals("", response);
+        Assertions.assertEquals(0, response.length());
 
-        List<Customer> response = customerServiceImplementation.getAllCustomers();
-
-        Assertions.assertEquals(1, response.size());
     }
+    @Test
+    void oneOrMoreValidationsFalse(){
+        Customer mockCustomer = new Customer();
+        mockCustomer.setCustomer_id(25);
+        mockCustomer.setIdentification_type_Id(1);
+        mockCustomer.setIdentification_number("1085293330");
+        mockCustomer.setFirst_name("PEPE");
+        mockCustomer.setLast_name("PEREZ");
+        mockCustomer.setEmail("pepe.perez@gmail.com");
+        mockCustomer.setDate_of_birth(LocalDate.now());
+        mockCustomer.setDate_of_birth(LocalDate.now());
+        mockCustomer.setStatus(true);
+        Mockito.when(validationsMock.checkAge(LocalDate.now())).thenReturn(false);
+        Mockito.when(validationsMock.checkIdentificationNumber(anyString(), anyInt(),anyInt())).thenReturn(true);
+        Mockito.when(validationsMock.checkEmail(anyString(), anyInt())).thenReturn(true);
+        Mockito.when(validationsMock.validEmail(anyString())).thenReturn(true);
+
+        String response = customerServiceImplementation.allValidations(mockCustomer);
+
+        Assertions.assertEquals("El cliente es menor de edad. ", response);
+    }
+    @Test
+    void createCustomerSuccessfully(){
+        Customer mockCustomer = new Customer();
+        mockCustomer.setIdentification_type_Id(1);
+        mockCustomer.setIdentification_number("1085293670");
+        mockCustomer.setFirst_name("carlos");
+        mockCustomer.setLast_name("calero");
+        mockCustomer.setEmail("carlos.calero@gmail.com");
+        mockCustomer.setDate_of_birth(LocalDate.now());
+        mockCustomer.setStatus(true);
+
+        Mockito.when(customerServiceImplementation.allValidations(mockCustomer)).thenReturn("");
+        Mockito.when(userDetailServiceImplementation.userActive(any())).thenReturn(1);
+        Mockito.when(customerRepositoryMock.save(mockCustomer)).thenReturn(mockCustomer);
+        Customer response = customerServiceImplementation.createCustomer(mockCustomer, any());
+
+        Assertions.assertEquals(mockCustomer, response);
+    }
+
+
+
+
 }

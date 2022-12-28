@@ -27,7 +27,7 @@ export class CustomerService {
     }
 
     delete(id: number){
-      return this.http.delete('/api/customers/' + id)
+      return this.http.delete<any>('/api/customers/' + id)
     }
 
     /*

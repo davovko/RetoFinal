@@ -1,5 +1,6 @@
 package com.sophos.sophosBank.service;
 
+import com.sophos.sophosBank.components.Validations;
 import com.sophos.sophosBank.entity.Customer;
 import com.sophos.sophosBank.security.UserDetailServiceImplementation;
 import com.sophos.sophosBank.repository.CustomerRepository;
@@ -8,13 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 
 @Service
@@ -26,6 +24,8 @@ public class CustomerServiceImplementation implements CustomerService{
     ProductRepository productRepository;
     @Autowired
     UserDetailServiceImplementation UserDetailServiceImplementation;
+    @Autowired
+    Validations validations;
 
     @Override
     public List<Customer> getAllCustomers() {
@@ -39,13 +39,9 @@ public class CustomerServiceImplementation implements CustomerService{
 
     @Override
     public Customer createCustomer(Customer customer, HttpServletRequest request) {
-        boolean adult = checkAge(customer.getDate_of_birth());
-        boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number().trim().toUpperCase(), customer.getIdentification_type_Id(), 0);
-        boolean email = checkEmail(customer.getEmail().trim().toLowerCase(), 0);
-        boolean validEmail = validEmail(customer.getEmail().trim());
-        boolean validName = (customer.getFirst_name().trim().length() >= 2 && customer.getLast_name().trim().length() >= 2 ? true: false);
+        String message = allValidations(customer);
 
-        if (adult && duplicateIdentification && email && validEmail && validName){
+        if (message.isEmpty()){
             customer.setIdentification_number(customer.getIdentification_number().trim().toUpperCase());
             customer.setFirst_name(customer.getFirst_name().trim().toUpperCase());
             customer.setMiddle_name(customer.getMiddle_name() != null ? customer.getMiddle_name().trim().toUpperCase() : null);
@@ -56,24 +52,15 @@ public class CustomerServiceImplementation implements CustomerService{
             customer.setCreation_user_id(UserDetailServiceImplementation.userActive(request));
             return customerRepository.save(customer);
         }
-        ;
-        String message = !adult ? "El cliente es menor de edad. ": "";
-        message += !duplicateIdentification ? "El número de identificación ya existe en la base de datos. ": "";
-        message += !email ? "El email ya existe en la base de datos.": "";
-        message += !validEmail ? "El email ingresado no tiene el formato válido.": "";
-        message += !validName ? "La extensión del Primer Nombre y del Primer Apellido NO puede ser menor a 2 caracteres.": "";
+
         throw new IllegalArgumentException(message);
     }
 
     @Override
     public Customer updateCustomer(Customer customer, int customer_id, HttpServletRequest request) {
-        boolean adult = checkAge(customer.getDate_of_birth());
-        boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number().trim().toUpperCase(), customer.getIdentification_type_Id(), customer_id);
-        boolean email = checkEmail(customer.getEmail().trim().toLowerCase(), customer_id);
-        boolean validEmail = validEmail(customer.getEmail().trim());
-        boolean validName = (customer.getFirst_name().trim().length() >= 2 && customer.getLast_name().trim().length() >= 2 );
+        String message = allValidations(customer);
 
-        if (adult && duplicateIdentification && email && validEmail && validName){
+        if (message.isEmpty()){
             Optional<Customer> oldCustomer = customerRepository.findById(customer_id);
             Customer newCustomer = oldCustomer.get();
 
@@ -90,11 +77,7 @@ public class CustomerServiceImplementation implements CustomerService{
 
             return customerRepository.save(newCustomer);
         }
-        String message = !adult ? "El cliente es menor de edad. ": "";
-        message += !duplicateIdentification ? "El número de identificación ya existe en la base de datos. ": "";
-        message += !email ? "El email ya existe en la base de datos.": "";
-        message += !validEmail ? "El email ingresado no tiene el formato válido.": "";
-        message += !validName ? "La extensión del Primer Nombre y del Primer Apellido NO puede ser menor a 2 caracteres.": "";
+
         throw new IllegalArgumentException(message);
     }
 
@@ -116,49 +99,19 @@ public class CustomerServiceImplementation implements CustomerService{
         throw new IllegalArgumentException(message);
     }
     @Override
-    public boolean checkAge(LocalDate date_of_birth){
+    public String allValidations(Customer customer){
+        boolean adult = validations.checkAge(customer.getDate_of_birth());
+        boolean duplicateIdentification = validations.checkIdentificationNumber(customer.getIdentification_number().trim().toUpperCase(), customer.getIdentification_type_Id(), 0);
+        boolean email = validations.checkEmail(customer.getEmail().trim().toLowerCase(), 0);
+        boolean validEmail = validations.validEmail(customer.getEmail().trim());
+        boolean validName = (customer.getFirst_name().trim().length() >= 2 && customer.getLast_name().trim().length() >= 2 ? true: false);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        Period age = Period.between(LocalDate.parse(date_of_birth.format(formatter), formatter), LocalDate.now());
+        String message = !adult ? "El cliente es menor de edad. ": "";
+        message += !duplicateIdentification ? "El número de identificación ya existe en la base de datos. ": "";
+        message += !email ? "El email ya existe en la base de datos.": "";
+        message += !validEmail ? "El email ingresado no tiene el formato válido.": "";
+        message += !validName ? "La extensión del Primer Nombre y del Primer Apellido NO puede ser menor a 2 caracteres.": "";
 
-        return age.getYears() >= 18;
-    }
-    @Override
-    public boolean checkIdentificationNumber(String identification_number, int identification_type_Id, int customer_id){
-        boolean response = true;
-        Customer customer = customerRepository.findCustomerByIdentificationNumber(identification_number, identification_type_Id);
-
-        if(customer != null){
-            if(customer_id == 0){
-                response = false;
-            }else if(customer.getCustomer_id() != customer_id ){
-                response = false;
-            }
-        }
-
-        return response ;
-    }
-    @Override
-    public boolean checkEmail(String email, int customer_id){
-        boolean response = true;
-        Customer customer = customerRepository.findCustomerByEmail(email);
-
-        if(customer != null){
-            if(customer_id == 0){
-                response = false;
-            } else if(customer.getCustomer_id() != customer_id ){
-                response = false;
-            }
-        }
-
-        return response;
-    }
-    @Override
-    public boolean validEmail(String email){
-        Pattern pattern = Pattern
-                .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
-
-        return pattern.matcher(email).find();
+        return message;
     }
 }
