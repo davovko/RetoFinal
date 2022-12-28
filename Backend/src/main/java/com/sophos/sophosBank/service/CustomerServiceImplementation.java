@@ -14,7 +14,6 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -41,8 +40,8 @@ public class CustomerServiceImplementation implements CustomerService{
     @Override
     public Customer createCustomer(Customer customer, HttpServletRequest request) {
         boolean adult = checkAge(customer.getDate_of_birth());
-        boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number(), customer.getIdentification_type_Id(), 0);
-        boolean email = checkEmail(customer.getEmail(), 0);
+        boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number().trim().toUpperCase(), customer.getIdentification_type_Id(), 0);
+        boolean email = checkEmail(customer.getEmail().trim().toLowerCase(), 0);
         boolean validEmail = validEmail(customer.getEmail().trim());
         boolean validName = (customer.getFirst_name().trim().length() >= 2 && customer.getLast_name().trim().length() >= 2 ? true: false);
 
@@ -69,8 +68,8 @@ public class CustomerServiceImplementation implements CustomerService{
     @Override
     public Customer updateCustomer(Customer customer, int customer_id, HttpServletRequest request) {
         boolean adult = checkAge(customer.getDate_of_birth());
-        boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number(), customer.getIdentification_type_Id(), customer_id);
-        boolean email = checkEmail(customer.getEmail(), customer_id);
+        boolean duplicateIdentification = checkIdentificationNumber(customer.getIdentification_number().trim().toUpperCase(), customer.getIdentification_type_Id(), customer_id);
+        boolean email = checkEmail(customer.getEmail().trim().toLowerCase(), customer_id);
         boolean validEmail = validEmail(customer.getEmail().trim());
         boolean validName = (customer.getFirst_name().trim().length() >= 2 && customer.getLast_name().trim().length() >= 2 );
 
@@ -130,9 +129,9 @@ public class CustomerServiceImplementation implements CustomerService{
         Customer customer = customerRepository.findCustomerByIdentificationNumber(identification_number, identification_type_Id);
 
         if(customer != null){
-            if(customer.getIdentification_number().equals(identification_number) && customer_id == 0){
+            if(customer_id == 0){
                 response = false;
-            }else if(customer.getIdentification_number().equals(identification_number) && customer.getCustomer_id() != customer_id ){
+            }else if(customer.getCustomer_id() != customer_id ){
                 response = false;
             }
         }
@@ -145,9 +144,9 @@ public class CustomerServiceImplementation implements CustomerService{
         Customer customer = customerRepository.findCustomerByEmail(email);
 
         if(customer != null){
-            if(customer.getEmail().equals(email) && customer_id == 0){
+            if(customer_id == 0){
                 response = false;
-            } else if(customer.getEmail().equals(email) && customer.getCustomer_id() != customer_id ){
+            } else if(customer.getCustomer_id() != customer_id ){
                 response = false;
             }
         }
