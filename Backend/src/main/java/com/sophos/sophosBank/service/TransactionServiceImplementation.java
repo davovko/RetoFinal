@@ -24,7 +24,7 @@ public class TransactionServiceImplementation implements TransactionService  {
     UserDetailServiceImplementation UserDetailServiceImplementation;
 
     @Override
-    public Transaction createTransaction(Transaction transaction, HttpServletRequest request) {
+    public Transaction createTransaction(Transaction transaction, int activeUserId) {
 
         transaction.setDescription(transaction.getDescription().toUpperCase());
 
@@ -35,7 +35,7 @@ public class TransactionServiceImplementation implements TransactionService  {
         Optional<Product> oldProduct = productRepository.findById(transaction.getProduct_id());
         Product newProduct = oldProduct.get();
         newProduct.setModification_date(LocalDateTime.now());
-        newProduct.setModification_user_id(UserDetailServiceImplementation.userActive(request));
+        newProduct.setModification_user_id(activeUserId);
         double availableBalance = oldProduct.get().getAvailable_balance();
         double maxValue = oldProduct.get().isGmf_exempt() ? -3000000: -3000000 + (transaction.getTransaction_value() * -0.004);
         String message = "";
@@ -118,7 +118,7 @@ public class TransactionServiceImplementation implements TransactionService  {
                     newDestinationProduct.setBalance(newBalance);
                     newDestinationProduct.setAvailable_balance(oldDestinationProduct.get().isGmf_exempt() ? newBalance : newBalance - (newBalance * 0.004));
                     newDestinationProduct.setModification_date(LocalDateTime.now());
-                    newDestinationProduct.setModification_user_id(UserDetailServiceImplementation.userActive(request));
+                    newDestinationProduct.setModification_user_id(activeUserId);
                     switch (oldProduct.get().getProduct_type_id()){
                         case 1: // CUENTA DE AHORROS
                             if (availableBalance < Math.abs(transaction.getTransaction_value())){

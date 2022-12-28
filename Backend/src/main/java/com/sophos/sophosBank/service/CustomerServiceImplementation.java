@@ -5,7 +5,6 @@ import com.sophos.sophosBank.entity.Customer;
 import com.sophos.sophosBank.security.UserDetailServiceImplementation;
 import com.sophos.sophosBank.repository.CustomerRepository;
 import com.sophos.sophosBank.repository.ProductRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,7 @@ public class CustomerServiceImplementation implements CustomerService{
     }
 
     @Override
-    public Customer createCustomer(Customer customer, HttpServletRequest request) {
+    public Customer createCustomer(Customer customer, int activeUserId) {
         String message = allValidations(customer);
 
         if (message.isEmpty()){
@@ -49,7 +48,7 @@ public class CustomerServiceImplementation implements CustomerService{
             customer.setSecond_last_name(customer.getSecond_last_name() != null ? customer.getSecond_last_name().trim().toUpperCase() : null);
 
             customer.setEmail(customer.getEmail().trim().toLowerCase());
-            customer.setCreation_user_id(UserDetailServiceImplementation.userActive(request));
+            customer.setCreation_user_id(activeUserId);
             return customerRepository.save(customer);
         }
 
@@ -57,7 +56,7 @@ public class CustomerServiceImplementation implements CustomerService{
     }
 
     @Override
-    public Customer updateCustomer(Customer customer, int customer_id, HttpServletRequest request) {
+    public Customer updateCustomer(Customer customer, int customer_id, int activeUserId) {
         String message = allValidations(customer);
 
         if (message.isEmpty()){
@@ -73,7 +72,7 @@ public class CustomerServiceImplementation implements CustomerService{
             newCustomer.setEmail(customer.getEmail().trim().toLowerCase());
             newCustomer.setDate_of_birth((customer.getDate_of_birth()));
             newCustomer.setModification_date(LocalDateTime.now());
-            newCustomer.setModification_user_id(UserDetailServiceImplementation.userActive(request));
+            newCustomer.setModification_user_id(activeUserId);
 
             return customerRepository.save(newCustomer);
         }
@@ -82,7 +81,7 @@ public class CustomerServiceImplementation implements CustomerService{
     }
 
     @Override
-    public boolean deleteCustomerById(int customer_id, HttpServletRequest request) {
+    public boolean deleteCustomerById(int customer_id, int activeUserId) {
 
         int activeProducts = productRepository.findAllActiveProductsByCustomerId(customer_id);
 
@@ -91,7 +90,7 @@ public class CustomerServiceImplementation implements CustomerService{
             Customer newCustomer = oldCustomer.get();
 
             newCustomer.setStatus(false);
-            newCustomer.setModification_user_id(UserDetailServiceImplementation.userActive(request));
+            newCustomer.setModification_user_id(activeUserId);
             customerRepository.save(newCustomer);
             return true;
         }

@@ -18,14 +18,14 @@ public class ProductServiceImplementation implements ProductService {
     @Autowired
     UserDetailServiceImplementation UserDetailServiceImplementation;
     @Override
-    public Product createProduct(Product product, HttpServletRequest request) {
+    public Product createProduct(Product product, int activeUserId) {
 
         Product productGmfExempt = productRepository.checkGmfExempt(product.getCustomer_id());
 
         if ( productGmfExempt == null || !product.isGmf_exempt()){
             product.setAccount_number("xx");
             product.setStatus_account_id(1);
-            product.setCreation_user_id(UserDetailServiceImplementation.userActive(request));
+            product.setCreation_user_id(activeUserId);
             productRepository.save(product);
 
             product.setAccount_number( newAccountNumber(product.getProduct_id(), product.getProduct_type_id()));
@@ -37,19 +37,16 @@ public class ProductServiceImplementation implements ProductService {
         throw new IllegalArgumentException(message);
 
     }
-
     @Override
     public List<Product> getAllProductsByCustomerId(int customer_id) {
         return productRepository.findAllProductsByCustomerId(customer_id);
     }
-
     @Override
     public Optional<Product> getProductById(int product_id) {
         return productRepository.findById(product_id);
     }
-
     @Override
-    public Product updateGmfExempt(int product_id, HttpServletRequest request){
+    public Product updateGmfExempt(int product_id, int activeUserId){
 
         Optional<Product> oldProduct = productRepository.findById(product_id);
         Product productGmfExempt = productRepository.checkGmfExempt(oldProduct.get().getCustomer_id());
@@ -60,7 +57,7 @@ public class ProductServiceImplementation implements ProductService {
             newProduct.setGmf_exempt(newState);
             newProduct.setAvailable_balance(oldProduct.get().getBalance() <= 0 ? 0 : newState ? oldProduct.get().getBalance() : Math.round(oldProduct.get().getBalance() - oldProduct.get().getBalance() * 0.004));
             newProduct.setModification_date(LocalDateTime.now());
-            newProduct.setModification_user_id(UserDetailServiceImplementation.userActive(request));
+            newProduct.setModification_user_id(activeUserId);
 
             return productRepository.save(newProduct);
 
@@ -70,7 +67,7 @@ public class ProductServiceImplementation implements ProductService {
         throw new IllegalArgumentException(message);
     }
     @Override
-    public Product updateStatusAccount(int status_account_id, int product_id, HttpServletRequest request){
+    public Product updateStatusAccount(int status_account_id, int product_id, int activeUserId){
 
         Optional<Product> oldProduct = productRepository.findById(product_id);
         String message;
@@ -80,7 +77,7 @@ public class ProductServiceImplementation implements ProductService {
             Product newProduct = oldProduct.get();
             newProduct.setStatus_account_id(status_account_id);
             newProduct.setModification_date(LocalDateTime.now());
-            newProduct.setModification_user_id(UserDetailServiceImplementation.userActive(request));
+            newProduct.setModification_user_id(activeUserId);
 
             if (status_account_id != 3){ // activar o desactivar
                 return productRepository.save(newProduct);

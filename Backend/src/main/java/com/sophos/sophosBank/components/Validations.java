@@ -2,9 +2,13 @@ package com.sophos.sophosBank.components;
 
 import com.sophos.sophosBank.entity.Customer;
 import com.sophos.sophosBank.repository.CustomerRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -57,4 +61,5 @@ public class Validations {
 
         return pattern.matcher(email).find();
     }
+
 }

@@ -3,6 +3,7 @@ package com.sophos.sophosBank.controller;
 import com.sophos.sophosBank.entity.Customer;
 import com.sophos.sophosBank.entity.HttpResponse;
 import com.sophos.sophosBank.service.CustomerService;
+import com.sophos.sophosBank.security.UserDetailServiceImplementation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,9 @@ public class CustomerController {
     @Autowired
     CustomerService customerService;
 
+    @Autowired
+    UserDetailServiceImplementation userDetailServiceImplementation;
+
     @GetMapping
     public ResponseEntity<List<Customer>> getCustomers() {
         return new ResponseEntity<>(customerService.getAllCustomers(), HttpStatus.OK);
@@ -34,9 +38,10 @@ public class CustomerController {
     @PostMapping("/createCustomer")
     public ResponseEntity<HttpResponse> createCustomer(@RequestBody Customer customer, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
+        int activeUserId = userDetailServiceImplementation.userActive(request);
         try{
             response.success = true;
-            response.data = customerService.createCustomer(customer, request);
+            response.data = customerService.createCustomer(customer, activeUserId);
             return new ResponseEntity<HttpResponse>(response, HttpStatus.CREATED);
         }catch (IllegalArgumentException e){
             response.success = false;
@@ -50,9 +55,10 @@ public class CustomerController {
     @PutMapping("/updateCustomer/{customer_id}")
     public ResponseEntity<HttpResponse> updateCustomer(@RequestBody Customer customer, @PathVariable("customer_id") int customer_id, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
+        int activeUserId = userDetailServiceImplementation.userActive(request);
         try{
             response.success = true;
-            response.data = customerService.updateCustomer(customer, customer_id, request);
+            response.data = customerService.updateCustomer(customer, customer_id, activeUserId);
             return new ResponseEntity<HttpResponse>(response, HttpStatus.CREATED);
         }catch (IllegalArgumentException e){
             response.success = false;
@@ -65,9 +71,10 @@ public class CustomerController {
     @DeleteMapping("/{customer_id}")
     public ResponseEntity deleteCustomerById(@PathVariable("customer_id") int customer_id, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
+        int activeUserId = userDetailServiceImplementation.userActive(request);
         try{
             response.success = true;
-            response.data = customerService.deleteCustomerById(customer_id, request);
+            response.data = customerService.deleteCustomerById(customer_id, activeUserId);
             return new ResponseEntity<HttpResponse>(response, HttpStatus.CREATED);
         }catch (IllegalArgumentException e){
             response.success = false;

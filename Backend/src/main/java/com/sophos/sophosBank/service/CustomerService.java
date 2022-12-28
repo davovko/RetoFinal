@@ -12,8 +12,8 @@ import java.util.Optional;
 public interface CustomerService {
     public List<Customer> getAllCustomers();
     public Optional<Customer> getCustomerById(int customer_id);
-    public Customer createCustomer(Customer customer, HttpServletRequest request) throws UnsupportedEncodingException;
-    public Customer updateCustomer(Customer customer, int customer_id, HttpServletRequest request);
-    public boolean deleteCustomerById(int customer_id, HttpServletRequest request);
+    public Customer createCustomer(Customer customer, int activeUserId) throws UnsupportedEncodingException;
+    public Customer updateCustomer(Customer customer, int customer_id, int activeUserId);
+    public boolean deleteCustomerById(int customer_id, int activeUserId);
     public String allValidations(Customer customer);
 }
