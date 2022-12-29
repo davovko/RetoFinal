@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 
@@ -22,10 +21,7 @@ public class CustomerServiceImplementation implements CustomerService{
     @Autowired
     ProductRepository productRepository;
     @Autowired
-    UserDetailServiceImplementation UserDetailServiceImplementation;
-    @Autowired
     Validations validations;
-
     @Override
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
