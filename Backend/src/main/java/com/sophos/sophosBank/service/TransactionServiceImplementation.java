@@ -5,7 +5,6 @@ import com.sophos.sophosBank.entity.Transaction;
 import com.sophos.sophosBank.repository.ProductRepository;
 import com.sophos.sophosBank.repository.TransactionRepository;
 import com.sophos.sophosBank.security.UserDetailServiceImplementation;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +40,7 @@ public class TransactionServiceImplementation implements TransactionService  {
         String message = "";
 
         Transaction gmfTransaction = new Transaction();
-        if(!oldProduct.get().isGmf_exempt()){
+        if(!oldProduct.get().isGmf_exempt() && transaction.getTransaction_type_id() != 1){
             gmfTransaction.setTransaction_type_id(2);
             gmfTransaction.setProduct_id(oldProduct.get().getProduct_id());
             gmfTransaction.setDescription("COBRO GMF / 4x1000");
@@ -112,13 +111,13 @@ public class TransactionServiceImplementation implements TransactionService  {
                     destinationTransaction.setTransaction_value(Math.abs(transaction.getTransaction_value()));
                     destinationTransaction.setOrigin_product_id(transaction.getProduct_id());
 
-                    Optional<Product> oldDestinationProduct = productRepository.findById(transaction.getDestination_product_id());
+                    /*Optional<Product> oldDestinationProduct = productRepository.findById(transaction.getDestination_product_id());
                     Product newDestinationProduct = oldDestinationProduct.get();
                     double newBalance = oldDestinationProduct.get().getBalance() + Math.abs(transaction.getTransaction_value());
                     newDestinationProduct.setBalance(newBalance);
                     newDestinationProduct.setAvailable_balance(oldDestinationProduct.get().isGmf_exempt() ? newBalance : newBalance - (newBalance * 0.004));
                     newDestinationProduct.setModification_date(LocalDateTime.now());
-                    newDestinationProduct.setModification_user_id(activeUserId);
+                    newDestinationProduct.setModification_user_id(activeUserId);*/
                     switch (oldProduct.get().getProduct_type_id()){
                         case 1: // CUENTA DE AHORROS
                             if (availableBalance < Math.abs(transaction.getTransaction_value())){
@@ -135,9 +134,7 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 if(!oldProduct.get().isGmf_exempt()){
                                     transactionRepository.save(gmfTransaction);
                                 }
-
-                                productRepository.save(newDestinationProduct);
-                                transactionRepository.save(destinationTransaction);
+                                createTransaction(destinationTransaction,activeUserId);
                                 return transaction;
                             }
                         case 2: //CUENTA CORRIENTE
@@ -160,10 +157,11 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 if(!oldProduct.get().isGmf_exempt()){
                                     transactionRepository.save(gmfTransaction);
                                 }
+                                createTransaction(destinationTransaction,activeUserId);
 
-                                productRepository.save(newDestinationProduct);
-                                transactionRepository.save(destinationTransaction);
                                 return transaction;
+                                //productRepository.save(newDestinationProduct);
+                                //transactionRepository.save(destinationTransaction);
 
                             }
                     }break;
