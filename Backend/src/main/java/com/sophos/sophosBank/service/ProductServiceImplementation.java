@@ -2,8 +2,6 @@ package com.sophos.sophosBank.service;
 
 import com.sophos.sophosBank.entity.Product;
 import com.sophos.sophosBank.repository.ProductRepository;
-import com.sophos.sophosBank.security.UserDetailServiceImplementation;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +13,14 @@ import java.util.Optional;
 public class ProductServiceImplementation implements ProductService {
     @Autowired
     ProductRepository productRepository;
-    @Autowired
-    UserDetailServiceImplementation UserDetailServiceImplementation;
+    @Override
+    public List<Product> getAllProductsByCustomerId(int customer_id) {
+        return productRepository.findAllProductsByCustomerId(customer_id);
+    }
+    @Override
+    public Optional<Product> getProductById(int product_id) {
+        return productRepository.findById(product_id);
+    }
     @Override
     public Product createProduct(Product product, int activeUserId) {
 
@@ -28,7 +32,20 @@ public class ProductServiceImplementation implements ProductService {
             product.setCreation_user_id(activeUserId);
             productRepository.save(product);
 
-            product.setAccount_number( newAccountNumber(product.getProduct_id(), product.getProduct_type_id()));
+            String accountNumber = "";
+
+            for (int i = 0; i < (8 - Integer.toString(product.getProduct_id()).length()); i++){
+                accountNumber = accountNumber + "0";
+            }
+
+            switch (product.getProduct_type_id()){
+                case 1: accountNumber = "46" + accountNumber + product.getProduct_id();
+                    break;
+                case 2: accountNumber = "23" + accountNumber + product.getProduct_id();
+                    break;
+            }
+
+            product.setAccount_number(accountNumber);
 
             return productRepository.save(product);
         }
@@ -36,14 +53,6 @@ public class ProductServiceImplementation implements ProductService {
         message = productGmfExempt != null ? "No se puede crear esta cuenta ya que la cuenta " + productGmfExempt.getAccount_number() + " ya se encuentra exenta GMF." : "";
         throw new IllegalArgumentException(message);
 
-    }
-    @Override
-    public List<Product> getAllProductsByCustomerId(int customer_id) {
-        return productRepository.findAllProductsByCustomerId(customer_id);
-    }
-    @Override
-    public Optional<Product> getProductById(int product_id) {
-        return productRepository.findById(product_id);
     }
     @Override
     public Product updateGmfExempt(int product_id, int activeUserId){
@@ -95,23 +104,6 @@ public class ProductServiceImplementation implements ProductService {
         }
         throw new IllegalArgumentException(message);
     }
-    @Override
-    public String newAccountNumber(int product_id, int product_type_id){
 
-        String accountNumber = "";
-
-        for (int i = 0; i < (8 - Integer.toString(product_id).length()); i++){
-            accountNumber = accountNumber + "0";
-        }
-
-        switch (product_type_id){
-            case 1: accountNumber = "46" + accountNumber + product_id;
-                break;
-            case 2: accountNumber = "23" + accountNumber + product_id;
-                break;
-        }
-
-        return accountNumber;
-    }
 
 }

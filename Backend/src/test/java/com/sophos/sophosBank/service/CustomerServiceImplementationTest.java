@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 class CustomerServiceImplementationTest {
-
     @InjectMocks
     private CustomerServiceImplementation customerServiceImplementation;
     @Mock
@@ -32,37 +31,15 @@ class CustomerServiceImplementationTest {
     ProductRepository productRepositoryMock;
     @Mock
     Validations validationsMock;
-    @Mock
-    com.sophos.sophosBank.security.UserDetailServiceImplementation userDetailServiceImplementation;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
     @Test
     void getAllCustomers(){
 
         Customer mockCustomer1 = new Customer();
-        mockCustomer1.setCustomer_id(25);
-        mockCustomer1.setIdentification_type_Id(1);
-        mockCustomer1.setIdentification_number("1085293330");
-        mockCustomer1.setFirst_name("PEPE");
-        mockCustomer1.setLast_name("PEREZ");
-        mockCustomer1.setEmail("pepe.perez@gmail.com");
-        mockCustomer1.setDate_of_birth(LocalDate.now());
-        mockCustomer1.setStatus(true);
-
         Customer mockCustomer2 = new Customer();
-        mockCustomer2.setCustomer_id(26);
-        mockCustomer2.setIdentification_type_Id(1);
-        mockCustomer2.setIdentification_number("1085293335");
-        mockCustomer2.setFirst_name("SARA");
-        mockCustomer2.setLast_name("CORAL");
-        mockCustomer2.setEmail("sara.coral@gmail.com");
-        mockCustomer2.setDate_of_birth(LocalDate.now());
-        mockCustomer2.setDate_of_birth(LocalDate.now());
-        mockCustomer2.setStatus(true);
 
         List<Customer> mockListCustomers = new ArrayList<>();
 
@@ -81,13 +58,6 @@ class CustomerServiceImplementationTest {
 
         Optional<Customer> mockCustomer = Optional.of(new Customer());
         mockCustomer.get().setCustomer_id(25);
-        mockCustomer.get().setIdentification_type_Id(1);
-        mockCustomer.get().setIdentification_number("1085293330");
-        mockCustomer.get().setFirst_name("PEPE");
-        mockCustomer.get().setLast_name("PEREZ");
-        mockCustomer.get().setEmail("pepe.perez@gmail.com");
-        mockCustomer.get().setDate_of_birth(LocalDate.now());
-        mockCustomer.get().setStatus(true);
 
         int customerId = 25;
 
@@ -271,7 +241,6 @@ class CustomerServiceImplementationTest {
 
         Assertions.assertTrue(response);
     }
-
     @Test
     void deleteCustomerByIdFailed(){
         int customerId = 24;

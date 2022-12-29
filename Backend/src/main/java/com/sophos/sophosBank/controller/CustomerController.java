@@ -19,7 +19,6 @@ import java.util.List;
 public class CustomerController {
     @Autowired
     CustomerService customerService;
-
     @Autowired
     UserDetailServiceImplementation userDetailServiceImplementation;
 
@@ -27,14 +26,12 @@ public class CustomerController {
     public ResponseEntity<List<Customer>> getCustomers() {
         return new ResponseEntity<>(customerService.getAllCustomers(), HttpStatus.OK);
     }
-
     @GetMapping("/{customer_id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable("customer_id") int customer_id){
         return customerService.getCustomerById(customer_id)
                 .map(customer -> new ResponseEntity<>(customer, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
     @PostMapping("/createCustomer")
     public ResponseEntity<HttpResponse> createCustomer(@RequestBody Customer customer, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
@@ -51,7 +48,6 @@ public class CustomerController {
             throw new RuntimeException(e);
         }
     }
-
     @PutMapping("/updateCustomer/{customer_id}")
     public ResponseEntity<HttpResponse> updateCustomer(@RequestBody Customer customer, @PathVariable("customer_id") int customer_id, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
@@ -67,7 +63,6 @@ public class CustomerController {
         }
 
     }
-
     @DeleteMapping("/{customer_id}")
     public ResponseEntity deleteCustomerById(@PathVariable("customer_id") int customer_id, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
