@@ -4,26 +4,19 @@ import com.sophos.sophosBank.entity.Product;
 import com.sophos.sophosBank.entity.Transaction;
 import com.sophos.sophosBank.repository.ProductRepository;
 import com.sophos.sophosBank.repository.TransactionRepository;
-import com.sophos.sophosBank.security.UserDetailServiceImplementation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -73,7 +66,7 @@ class TransactionServiceImplementationTest {
         Assertions.assertTrue(mockListTransactions.containsAll(response) && response.containsAll(mockListTransactions));
     }
     @Test
-    void createTransaccionConsigment(){
+    void createTransactionConsignment(){
         Transaction mockTransaction = new Transaction();
         mockTransaction.setTransaction_type_id(1);//CONSIGNACIÓN
         mockTransaction.setProduct_id(1);
@@ -99,7 +92,7 @@ class TransactionServiceImplementationTest {
         Assertions.assertEquals(mockTransaction, response);
     }
     @Test
-    void createTransactionWithdrawalGmfExepmt(){
+    void createTransactionWithdrawalGmfExempt(){
         Transaction mockTransaction = new Transaction();
         mockTransaction.setTransaction_type_id(2);//RETIRO
         mockTransaction.setProduct_id(1);
@@ -116,6 +109,42 @@ class TransactionServiceImplementationTest {
         int activeUserId = 1;
 
         when(productRepositoryMock.findById(mockTransaction.getProduct_id())).thenReturn(mockOldProduct);
+
+        Transaction response = transactionServiceImplementation.createTransaction(mockTransaction, activeUserId);
+
+        Assertions.assertEquals(0, mockNewProduct.getAvailable_balance());
+        Assertions.assertEquals(0, mockNewProduct.getBalance());
+        Assertions.assertEquals(mockTransaction, response);
+    }
+    @Test
+    void createTransactionTransferGMFExempt(){
+        Transaction mockTransaction = new Transaction();
+        mockTransaction.setTransaction_type_id(3);//TRANSACCION ENTRE CUENTAS
+        mockTransaction.setProduct_id(1);
+        mockTransaction.setDescription("TRANSACCIÓN 1");
+        mockTransaction.setTransaction_value(500);
+        mockTransaction.setDestination_product_id(2);
+
+        Optional<Product> mockOldProduct = Optional.of(new Product());
+        mockOldProduct.get().setProduct_id(1);
+        mockOldProduct.get().setProduct_type_id(1);//CUENTA DE AHORROS
+        mockOldProduct.get().setBalance(1000);
+        mockOldProduct.get().setAvailable_balance(1000);
+        mockOldProduct.get().setAccount_number("4600000002");
+        mockOldProduct.get().setGmf_exempt(true);
+        Product mockNewProduct = mockOldProduct.get();
+
+        Transaction mockDestinationTransaction = new Transaction();
+        mockDestinationTransaction.setTransaction_type_id(1);
+        mockDestinationTransaction.setProduct_id(mockTransaction.getDestination_product_id());
+        mockDestinationTransaction.setDescription("TRANSFERENCIA CUENTA N° " + mockOldProduct.get().getAccount_number());
+        mockDestinationTransaction.setTransaction_value(Math.abs(mockTransaction.getTransaction_value()));
+        mockDestinationTransaction.setOrigin_product_id(mockTransaction.getProduct_id());
+
+        int activeUserId = 1;
+
+        when(productRepositoryMock.findById(mockTransaction.getProduct_id())).thenReturn(mockOldProduct);
+        //when(transactionServiceImplementation.createTransaction(mockDestinationTransaction, activeUserId)).thenReturn(mockDestinationTransaction);
         when(productRepositoryMock.save(mockNewProduct)).thenReturn(mockNewProduct);
         when(transactionRepositoryMock.save(mockTransaction)).thenReturn(mockTransaction);
 
@@ -126,34 +155,34 @@ class TransactionServiceImplementationTest {
         Assertions.assertEquals(mockTransaction, response);
     }
     @Test
-    void createTransactionTransferGMFExepmt(){
+    void createTransactionErrorBalanceNotAvailable(){
         Transaction mockTransaction = new Transaction();
-        mockTransaction.setTransaction_type_id(3);//TRANSACCION ENTRE CUENTAS
+        mockTransaction.setTransaction_type_id(2);//RETIRO
         mockTransaction.setProduct_id(1);
         mockTransaction.setDescription("TRANSACCIÓN 1");
         mockTransaction.setTransaction_value(1000);
+        mockTransaction.setDestination_product_id(2);
 
         Optional<Product> mockOldProduct = Optional.of(new Product());
-        mockOldProduct.get().setProduct_type_id(1);
-        mockOldProduct.get().setBalance(1000);
-        mockOldProduct.get().setAvailable_balance(1000);
+        mockOldProduct.get().setProduct_id(1);
+        mockOldProduct.get().setProduct_type_id(1);//CUENTA DE AHORROS
+        mockOldProduct.get().setBalance(500);
+        mockOldProduct.get().setAvailable_balance(500);
+        mockOldProduct.get().setAccount_number("4600000002");
         mockOldProduct.get().setGmf_exempt(true);
-        Product mockNewProduct = mockOldProduct.get();
-
-
 
         int activeUserId = 1;
 
         when(productRepositoryMock.findById(mockTransaction.getProduct_id())).thenReturn(mockOldProduct);
-        when(productRepositoryMock.save(mockNewProduct)).thenReturn(mockNewProduct);
-        when(transactionRepositoryMock.save(mockTransaction)).thenReturn(mockTransaction);
 
-        Transaction response = transactionServiceImplementation.createTransaction(mockTransaction, activeUserId);
+        try{
 
-        Assertions.assertEquals(0, mockNewProduct.getAvailable_balance());
-        Assertions.assertEquals(0, mockNewProduct.getBalance());
-        Assertions.assertEquals(mockTransaction, response);
-
+            when(transactionServiceImplementation.createTransaction(mockTransaction, activeUserId))
+                    .thenThrow(new IllegalArgumentException("No se puede realizar la transacción. No tiene saldo disponible"));
+        } catch (Exception e){
+            Assertions.assertEquals("No se puede realizar la transacción. No tiene saldo disponible", e.getMessage());
+            Assertions.assertTrue(e instanceof IllegalArgumentException);
+        }
     }
 
 

@@ -210,7 +210,6 @@ class CustomerServiceImplementationTest {
         when(validationsMock.validEmail(anyString())).thenReturn(true);
 
         try{
-
             when(customerServiceImplementation.updateCustomer(mockCustomer, customerId, activeUserId))
                     .thenThrow(new IllegalArgumentException("El cliente es menor de edad. "));
         } catch (Exception e){

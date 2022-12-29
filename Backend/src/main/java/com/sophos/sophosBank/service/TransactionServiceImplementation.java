@@ -21,6 +21,7 @@ public class TransactionServiceImplementation implements TransactionService  {
     TransactionRepository transactionRepository;
     @Autowired
     UserDetailServiceImplementation UserDetailServiceImplementation;
+    int transactionNumber = 1;
 
     @Override
     public Transaction createTransaction(Transaction transaction, int activeUserId) {
@@ -64,14 +65,17 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 message = "No se puede realizar la transacción. No tiene saldo disponible";
                                 break;
                             } else{
-                                newProduct.setBalance(oldProduct.get().getBalance() - Math.abs(transaction.getTransaction_value()) - (oldProduct.get().isGmf_exempt() ? 0 : (Math.abs(transaction.getTransaction_value() * 0.004))));
-                                newProduct.setAvailable_balance(oldProduct.get().isGmf_exempt() ? oldProduct.get().getBalance() : oldProduct.get().getBalance() - (oldProduct.get().getBalance() * 0.004));
-                                productRepository.save(newProduct);
+                                if(transaction.getDescription() != "COBRO GMF / 4x1000"){
+                                    newProduct.setBalance(oldProduct.get().getBalance() - Math.abs(transaction.getTransaction_value()) - (oldProduct.get().isGmf_exempt() ? 0 : (Math.abs(transaction.getTransaction_value() * 0.004))));
+                                    newProduct.setAvailable_balance(oldProduct.get().isGmf_exempt() ? oldProduct.get().getBalance() : oldProduct.get().getBalance() - (oldProduct.get().getBalance() * 0.004));
+                                    productRepository.save(newProduct);
+                                }
 
                                 transactionRepository.save(transaction);
 
-                                if(!oldProduct.get().isGmf_exempt()){
-                                    transactionRepository.save(gmfTransaction);
+                                if(!oldProduct.get().isGmf_exempt() && transactionNumber < 2){
+                                    transactionNumber++;
+                                    createTransaction(gmfTransaction,activeUserId);
                                 }
                                 return transaction;
                             }
@@ -84,55 +88,49 @@ public class TransactionServiceImplementation implements TransactionService  {
 
                                 newProduct.setBalance(oldProduct.get().getBalance() - Math.abs(transaction.getTransaction_value()) - (oldProduct.get().isGmf_exempt() ? 0 : (Math.abs(transaction.getTransaction_value() * 0.004))));
 
-                                if((availableBalance - Math.abs(transaction.getTransaction_value())) > 0){
-                                    newProduct.setAvailable_balance(oldProduct.get().isGmf_exempt() ? oldProduct.get().getBalance() : oldProduct.get().getBalance() - (oldProduct.get().getBalance() * 0.004));
-                                } else {
-                                    newProduct.setAvailable_balance(0);
+                                if(transaction.getDescription() != "COBRO GMF / 4x1000"){
+                                    if((availableBalance - Math.abs(transaction.getTransaction_value())) > 0){
+                                        newProduct.setAvailable_balance(oldProduct.get().isGmf_exempt() ? oldProduct.get().getBalance() : oldProduct.get().getBalance() - (oldProduct.get().getBalance() * 0.004));
+                                    } else {
+                                        newProduct.setAvailable_balance(0);
+                                    }
+                                    productRepository.save(newProduct);
                                 }
-
-                                productRepository.save(newProduct);
 
                                 transactionRepository.save(transaction);
 
-                                if(!oldProduct.get().isGmf_exempt()){
-                                    transactionRepository.save(gmfTransaction);
+                                if(!oldProduct.get().isGmf_exempt() && transactionNumber < 2){
+                                    transactionNumber++;
+                                    createTransaction(gmfTransaction,activeUserId);
                                 }
                                 return transaction;
-
                             }
-
                     }
                     break;
                 case 3: // TRANSACCION ENTRE CUENTAS
                     Transaction destinationTransaction = new Transaction();
-                    destinationTransaction.setTransaction_type_id(1);//????????????
+                    destinationTransaction.setTransaction_type_id(1);//CONSIGNACIÓN
                     destinationTransaction.setProduct_id(transaction.getDestination_product_id());
                     destinationTransaction.setDescription("TRANSFERENCIA CUENTA N° " + oldProduct.get().getAccount_number());
                     destinationTransaction.setTransaction_value(Math.abs(transaction.getTransaction_value()));
                     destinationTransaction.setOrigin_product_id(transaction.getProduct_id());
 
-                    /*Optional<Product> oldDestinationProduct = productRepository.findById(transaction.getDestination_product_id());
-                    Product newDestinationProduct = oldDestinationProduct.get();
-                    double newBalance = oldDestinationProduct.get().getBalance() + Math.abs(transaction.getTransaction_value());
-                    newDestinationProduct.setBalance(newBalance);
-                    newDestinationProduct.setAvailable_balance(oldDestinationProduct.get().isGmf_exempt() ? newBalance : newBalance - (newBalance * 0.004));
-                    newDestinationProduct.setModification_date(LocalDateTime.now());
-                    newDestinationProduct.setModification_user_id(activeUserId);*/
                     switch (oldProduct.get().getProduct_type_id()){
                         case 1: // CUENTA DE AHORROS
                             if (availableBalance < Math.abs(transaction.getTransaction_value())){
                                 message = "No se puede realizar la transacción. No tiene saldo disponible";
                                 break;
                             } else{
-
-                                newProduct.setBalance(oldProduct.get().getBalance() - Math.abs(transaction.getTransaction_value()) - (oldProduct.get().isGmf_exempt() ? 0 : Math.abs(transaction.getTransaction_value() * 0.004)));
-                                newProduct.setAvailable_balance(oldProduct.get().isGmf_exempt() ? oldProduct.get().getBalance() : oldProduct.get().getBalance() - (oldProduct.get().getBalance() * 0.004));
-                                productRepository.save(newProduct);
+                                if(transaction.getDescription() != "COBRO GMF / 4x1000"){
+                                    newProduct.setBalance(oldProduct.get().getBalance() - Math.abs(transaction.getTransaction_value()) - (oldProduct.get().isGmf_exempt() ? 0 : Math.abs(transaction.getTransaction_value() * 0.004)));
+                                    newProduct.setAvailable_balance(oldProduct.get().isGmf_exempt() ? oldProduct.get().getBalance() : oldProduct.get().getBalance() - (oldProduct.get().getBalance() * 0.004));
+                                    productRepository.save(newProduct);
+                                }
 
                                 transactionRepository.save(transaction);
 
                                 if(!oldProduct.get().isGmf_exempt()){
-                                    transactionRepository.save(gmfTransaction);
+                                    createTransaction(gmfTransaction,activeUserId);
                                 }
                                 createTransaction(destinationTransaction,activeUserId);
                                 return transaction;
@@ -144,33 +142,27 @@ public class TransactionServiceImplementation implements TransactionService  {
                             } else {
                                 newProduct.setBalance(oldProduct.get().getBalance() - Math.abs(transaction.getTransaction_value()) - (oldProduct.get().isGmf_exempt() ? 0 : (Math.abs(transaction.getTransaction_value() * 0.004))));
 
-                                if((availableBalance -  Math.abs(transaction.getTransaction_value())) > 0){
-                                    newProduct.setAvailable_balance(oldProduct.get().isGmf_exempt() ? oldProduct.get().getBalance() : oldProduct.get().getBalance() - (oldProduct.get().getBalance() * 0.004));
-                                } else {
-                                    newProduct.setAvailable_balance(0);
+                                if(transaction.getDescription() != "COBRO GMF / 4x1000"){
+                                    if((availableBalance -  Math.abs(transaction.getTransaction_value())) > 0){
+                                        newProduct.setAvailable_balance(oldProduct.get().isGmf_exempt() ? oldProduct.get().getBalance() : oldProduct.get().getBalance() - (oldProduct.get().getBalance() * 0.004));
+                                    } else {
+                                        newProduct.setAvailable_balance(0);
+                                    }
+                                    productRepository.save(newProduct);
                                 }
-
-                                productRepository.save(newProduct);
-
                                 transactionRepository.save(transaction);
 
                                 if(!oldProduct.get().isGmf_exempt()){
-                                    transactionRepository.save(gmfTransaction);
+                                    createTransaction(gmfTransaction,activeUserId);
                                 }
                                 createTransaction(destinationTransaction,activeUserId);
 
                                 return transaction;
-                                //productRepository.save(newDestinationProduct);
-                                //transactionRepository.save(destinationTransaction);
 
                             }
                     }break;
-
-
             }
         }
-
-
         throw new IllegalArgumentException(message);
     }
 
