@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, catchError, map } from 'rxjs';
 import { Credentials } from './models/credentials';
 
@@ -13,7 +13,11 @@ export class LoginService {
   ) { }
 
   login(creds: Credentials){
+    const headers = new HttpHeaders({
+      "X-Requested-With": "XMLHttpRequest"
+    });
     return this.http.post('/api/login', creds,{
+      headers,
       observe: 'response'
     }).pipe(map((response: HttpResponse<any>) =>{
       const body = response.body;

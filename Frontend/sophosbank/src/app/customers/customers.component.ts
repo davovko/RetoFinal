@@ -34,7 +34,6 @@ export class CustomersComponent implements OnInit{
   ){ }
 
   ngOnInit(): void {
-    debugger
     this.getCustomers();  
   }  
   
@@ -50,7 +49,6 @@ export class CustomersComponent implements OnInit{
       this.customerService.update({ id: values.customer_id, customer: values })
     .subscribe(data => {
       if(data.success){
-        debugger
         this.getCustomers();
         this.modal.dismissAll();
         Swal.fire('Cliente actualizado!', '', 'success') ;
@@ -64,7 +62,6 @@ export class CustomersComponent implements OnInit{
       this.customerService.create(values)
       .subscribe(data => {
         if(data.success){
-          debugger
           this.getCustomers();
           this.modal.dismissAll();
           Swal.fire('Cliente creado!', '', 'success') ;

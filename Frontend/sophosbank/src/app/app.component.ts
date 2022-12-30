@@ -19,7 +19,7 @@ export class AppComponent implements OnInit{
   ){}
 
   ngOnInit(): void {
-    var token =  this.loginService.getToken();
+    var token =  this.loginService.getToken();    
     this.loginService.userName.subscribe( data => this.userName = data)   
   }
 
