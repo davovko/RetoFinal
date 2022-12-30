@@ -127,6 +127,4 @@ class CustomerControllerTest {
         var response = customerControllerMock.deleteCustomerById(customerId, any());
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode() );
     }
-
-
 }

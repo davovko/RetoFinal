@@ -16,13 +16,10 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/products")
 public class ProductController {
-
     @Autowired
     ProductService productService;
-
     @Autowired
     UserDetailServiceImplementation userDetailServiceImplementation;
-
     @GetMapping("/listProductsByUserId/{customer_id}")
     public ResponseEntity<List<Product>> getAllProductsByCustomerId(@PathVariable("customer_id") int customer_id){
         return new ResponseEntity<>(productService.getAllProductsByCustomerId(customer_id), HttpStatus.OK);
