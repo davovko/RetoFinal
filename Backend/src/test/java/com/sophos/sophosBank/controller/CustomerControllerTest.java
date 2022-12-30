@@ -11,14 +11,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,15 +42,90 @@ class CustomerControllerTest {
         mockListCustomers.add(mockCustomer2);
 
         when(customerServiceMock.getAllCustomers()).thenReturn(mockListCustomers);
-        //when(customerRepositoryMock.findAll()).thenReturn(mockListCustomers);
-        ResponseEntity<List> responseEntity = new ResponseEntity<>(mockListCustomers, HttpStatus.OK);
 
-        List<Customer> response = (List<Customer>) customerControllerMock.getCustomers();
+        ResponseEntity<List<Customer>> response = customerControllerMock.getCustomers();
 
-        Assertions.assertTrue(mockListCustomers.equals(responseEntity.getBody()));
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     }
     @Test
     void getCustomerById() {
+        Optional<Customer> mockCustomer = Optional.of(new Customer());
+        int customerId = 1;
+
+        when(customerServiceMock.getCustomerById(customerId)).thenReturn(mockCustomer);
+        ResponseEntity<Customer> response = customerControllerMock.getCustomerById(customerId);
+        Assertions.assertEquals( HttpStatus.OK, response.getStatusCode());
+    }
+    @Test
+    void getCustomerByIdFailed() {
+        Optional<Customer> mockCustomer = Optional.empty();
+        int customerId = 1;
+
+        when(customerServiceMock.getCustomerById(customerId)).thenReturn(mockCustomer);
+        ResponseEntity<Customer> response = customerControllerMock.getCustomerById(customerId);
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+    @Test
+    void createCustomerSuccessfully(){
+        Customer mockCustomer = new Customer();
+
+        when(userDetailServiceImplementation.userActive(any())).thenReturn(1);
+        when(customerServiceMock.createCustomer(mockCustomer, 1)).thenReturn(mockCustomer);
+        var response = customerControllerMock.createCustomer(mockCustomer, any());
+
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode() );
+    }
+    @Test
+    void createCustomerFailed(){
+        Customer mockCustomer = new Customer();
+
+        when(userDetailServiceImplementation.userActive(any())).thenReturn(1);
+        when(customerServiceMock.createCustomer(mockCustomer, 1)).thenThrow(IllegalArgumentException.class);
+
+        var response = customerControllerMock.createCustomer(mockCustomer, any());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode() );
+    }
+    @Test
+    void updateCustomerSuccessfully(){
+        Customer mockCustomer = new Customer();
+        int customerId = 2;
+
+        when(userDetailServiceImplementation.userActive(any())).thenReturn(1);
+        when(customerServiceMock.updateCustomer(mockCustomer, customerId, 1)).thenReturn(mockCustomer);
+        var response = customerControllerMock.updateCustomer(mockCustomer, customerId, any());
+
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode() );
+    }
+    @Test
+    void updateCustomerFailed(){
+        Customer mockCustomer = new Customer();
+        int customerId = 2;
+
+        when(userDetailServiceImplementation.userActive(any())).thenReturn(1);
+        when(customerServiceMock.updateCustomer(mockCustomer, customerId, 1)).thenThrow(IllegalArgumentException.class);
+
+        var response = customerControllerMock.updateCustomer(mockCustomer, customerId, any());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode() );
+    }
+    @Test
+    void deleteCustomerSuccessfully(){
+        int customerId = 2;
+
+        when(userDetailServiceImplementation.userActive(any())).thenReturn(1);
+        when(customerServiceMock.deleteCustomerById(customerId, 1)).thenReturn(true);
+        var response = customerControllerMock.deleteCustomerById(customerId, any());
+
+        Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode() );
+    }
+    @Test
+    void deleteCustomerFailed(){
+        int customerId = 2;
+
+        when(userDetailServiceImplementation.userActive(any())).thenReturn(1);
+        when(customerServiceMock.deleteCustomerById(customerId, 1)).thenThrow(IllegalArgumentException.class);
+
+        var response = customerControllerMock.deleteCustomerById(customerId, any());
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode() );
     }
 
 

@@ -44,8 +44,6 @@ public class CustomerController {
             response.success = false;
             response.message= e.getMessage();
             return new ResponseEntity<HttpResponse>(response, HttpStatus.OK);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
         }
     }
     @PutMapping("/updateCustomer/{customer_id}")
