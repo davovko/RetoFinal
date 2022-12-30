@@ -21,15 +21,15 @@
                         </thead>
                         <tbody>
                             <tr >
-                                <td class="text-right" [ngClass]="{'text-danger': productData.balance < 0}">$ {{productData?.balance! | number:'1.2-2'}}</td>
+                                <td class="text-right" [ngClass]="{'text-danger': (productData?.balance || 0) < 0}">$ {{productData?.balance! | number:'1.2-2'}}</td>
                                 <td class="card-text">${{productData?.available_balance | number:'1.2-2'}}</td>
-                                <td [ngSwitch]=productData.status_account_id>
+                                <td [ngSwitch]=productData?.status_account_id>
                                     <span *ngSwitchCase="1">ACTIVA</span>
                                     <span *ngSwitchCase="2">INACTIVA</span>
                                     <span *ngSwitchCase="3">CANCELADA</span>
                                 </td>
-                                <td class="card-text" *ngIf="productData.gmf_exempt;">Si</td>
-                                <td class="card-text" *ngIf="!productData.gmf_exempt;">No</td>
+                                <td class="card-text" *ngIf="productData?.gmf_exempt;">Si</td>
+                                <td class="card-text" *ngIf="!productData?.gmf_exempt;">No</td>
                             </tr>
                         </tbody>                    
                     </table>
@@ -91,8 +91,8 @@
                         <select (change)="enabledListOfAccount()" formControlName="transaction_type_id" id="transaction_type_id" class="form-select" aria-label="Default select example" required>
                             <option [ngValue]="null" disabled>Selecione un tipo de transacción</option>
                             <option [ngValue]="1">CONSIGNACIÓN</option>
-                            <option *ngIf="productData.status_account_id != 2;" [ngValue]="2">RETIRO</option>
-                            <option *ngIf="productData.status_account_id != 2;" [ngValue]="3">TRANSFERENCIA ENTRE CUENTAS</option>
+                            <option *ngIf="productData?.status_account_id != 2;" [ngValue]="2">RETIRO</option>
+                            <option *ngIf="productData?.status_account_id != 2;" [ngValue]="3">TRANSFERENCIA ENTRE CUENTAS</option>
                         </select>
                     </div>
                 </div>

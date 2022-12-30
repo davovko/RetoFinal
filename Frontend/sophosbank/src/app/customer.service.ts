@@ -28,16 +28,5 @@ export class CustomerService {
 
     delete(id: number){
       return this.http.delete<any>('/api/customers/' + id)
-    }
-
-    /*
-    getHeaders(){
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer rqerqwreqwe`
-      });
-      return {headers};
-    }*/
-
-
+    } 
 }

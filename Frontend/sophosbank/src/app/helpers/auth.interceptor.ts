@@ -4,9 +4,10 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpErrorResponse
+  HttpErrorResponse,
+  HttpHeaders
 } from '@angular/common/http';
-import { Observable, catchError, retry, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { LoginService } from '../login.service';
 import { Router } from '@angular/router';
 
@@ -22,19 +23,24 @@ export class AuthInterceptor implements HttpInterceptor {
     const token = this.loginService.getToken();
     
     if(token){
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`,
+        "X-Requested-With": "XMLHttpRequest"
+
+      });
       const cloned = request.clone({
-        headers: request.headers.set('Authorization', `Bearer ${token}`)
+        headers: headers
       })
 
-      return next.handle(cloned).pipe(retry(1),catchError((error: HttpErrorResponse) =>{
-      
-        this.router.navigate(['/']);
+      return next.handle(cloned).pipe(catchError((error: HttpErrorResponse) =>{
+        this.loginService.logout();
+        this.router.navigate(['']);
         return throwError("")
       }));
     }    
     return next.handle(request).pipe(catchError((error: HttpErrorResponse) =>{
       
-      this.router.navigate(['/customers']);
+      //this.router.navigate(['/customers']);
       return throwError("")
     }));
   }

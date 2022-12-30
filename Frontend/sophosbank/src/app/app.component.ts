@@ -20,17 +20,7 @@ export class AppComponent implements OnInit{
 
   ngOnInit(): void {
     var token =  this.loginService.getToken();
-    this.loginService.userName.subscribe( data => this.userName = data)  
-    /*
-    if(token){
-      var base64Url = token.split('.')[1];
-      var base64 = base64Url.replace('-', '+').replace('_', '/');      
-      var obj = JSON.parse(atob(base64));
-
-      localStorage.setItem('userName', obj.name)
-
-      this.userName = localStorage.getItem('userName') || "";      
-    } */     
+    this.loginService.userName.subscribe( data => this.userName = data)   
   }
 
   logOut(){
@@ -44,17 +34,15 @@ export class AppComponent implements OnInit{
       confirmButtonText: 'Si!'
     }).then((result) => {
       if (result.isConfirmed) {
-        localStorage.removeItem('token');
+        this.loginService.logout()
         Swal.fire({
           icon: 'success',
           title: 'Sesión eliminada!',
           showConfirmButton: false,
           timer: 1800
         })
-        this.router.navigate(['/'])
+        this.router.navigate([''])
       }
-    })
-    localStorage.removeItem('token');
-    this.userName = '';
+    })    
   }
 }

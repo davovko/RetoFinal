@@ -20,12 +20,12 @@ export class TransactionsComponent implements OnInit {
   transactionType! : number;
   transactions: Transaction[] = [];
   products: Product[] = [];  
-  productData!: Product;  
+  productData: Product | null = null;  
   form: FormGroup = this.fb.group({
     transaction_type_id: [Validators.required],
     description: [Validators.required],
     transaction_value: [Validators.required],
-    destination_product_id: [],
+    destination_product_id: [Validators.required],
     origin_product_id: [Validators.required]
   });
   ngSelect = "";
@@ -70,11 +70,13 @@ export class TransactionsComponent implements OnInit {
   enabledListOfAccount(){
     this.transactionType = this.form.value.transaction_type_id; 
     this.form.controls['destination_product_id'].reset()
+    this.form.controls['transaction_value'].reset()    
+    this.form.controls['description'].reset()
     if(this.transactionType == 1 || this.transactionType == 2){       
       this.form.controls['destination_product_id'].removeValidators;     
       this.form.controls['destination_product_id'].disable();
     } else {
-      this.form.controls['destination_product_id'].addValidators;     
+      this.form.controls['destination_product_id'].addValidators(Validators.required);  
       this.form.controls['destination_product_id'].enable();
     }
   }
@@ -103,5 +105,4 @@ export class TransactionsComponent implements OnInit {
       this.transactions = data;  
     })
   }
-
 }

@@ -32,6 +32,7 @@ export class LoginComponent implements OnInit{
   logIn(form: NgForm){
     this.loginService.login(this.creds)
       .subscribe(response => {  
+        debugger
         if(response == null){
           Swal.fire({
             icon: 'success',
@@ -40,15 +41,16 @@ export class LoginComponent implements OnInit{
             timer: 1800
           })
           this.router.navigate(['/customers'])
-        }else{
-          Swal.fire({
-            icon: 'error',
-            title: 'Usuarios o contraseña incorrectos',
-            showConfirmButton: false,
-            timer: 1800
-          })
-        }  
-      })
+        }
+      }, error => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Usuarios o contraseña incorrectos',
+          showConfirmButton: false,
+          timer: 1800
+        })
+      }
+      )
   }
 
 }

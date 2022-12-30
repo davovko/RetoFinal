@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpRequest, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, map } from 'rxjs';
+import { BehaviorSubject, catchError, map } from 'rxjs';
 import { Credentials } from './models/credentials';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginService {
-  userName: BehaviorSubject<string> = new BehaviorSubject("");
+  userName: BehaviorSubject<string> = new BehaviorSubject(localStorage.getItem('userName') || "");
   constructor(
     private http: HttpClient
   ) { }
@@ -33,7 +33,15 @@ export class LoginService {
       this.userName.next(obj.name);
 
       return body;
-    }))
+    })//, catchError (() => {
+      
+    //})
+    )
+  }
+
+  logout(){
+    localStorage.clear();
+    this.userName.next("");
   }
 
   getToken(){
