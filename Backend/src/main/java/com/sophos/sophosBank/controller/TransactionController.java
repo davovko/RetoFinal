@@ -16,19 +16,16 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/transactions")
 public class TransactionController {
-
     @Autowired
     TransactionService transactionService;
     @Autowired
     UserDetailServiceImplementation userDetailServiceImplementation;
-
     @GetMapping("/{product_id}")
     public ResponseEntity<List<Transaction>> getAllTransactionsByProductId(@PathVariable("product_id") int product_id){
         return new ResponseEntity<>(transactionService.getAllTransactionsByProductId(product_id), HttpStatus.OK);
     }
-
     @PostMapping("/createTransaction")
-    public ResponseEntity<HttpResponse> createProduct(@RequestBody Transaction transaction, HttpServletRequest request){
+    public ResponseEntity<HttpResponse> createTransaction(@RequestBody Transaction transaction, HttpServletRequest request){
         HttpResponse response = new HttpResponse();
         int activeUserId = userDetailServiceImplementation.userActive(request);
         try{

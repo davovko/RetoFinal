@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,7 +30,6 @@ public class TokenUtils {
                 .signWith(Keys.hmacShaKeyFor(ACCESS_TOKEN_SECRET.getBytes()))
                 .compact();
     }
-
     public static UsernamePasswordAuthenticationToken getAuthentication(String token){
         try{
             Claims claims = Jwts.parserBuilder()
@@ -47,5 +45,4 @@ public class TokenUtils {
             return null;
         }
     }
-
 }

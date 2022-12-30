@@ -2,8 +2,6 @@ package com.sophos.sophosBank.components;
 
 import com.sophos.sophosBank.entity.Customer;
 import com.sophos.sophosBank.repository.CustomerRepository;
-import com.sophos.sophosBank.repository.ProductRepository;
-import com.sophos.sophosBank.service.CustomerServiceImplementation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,12 +11,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 
 class ValidationsTest {
 

@@ -1,8 +1,6 @@
 package com.sophos.sophosBank.service;
 
 import com.sophos.sophosBank.entity.Transaction;
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.util.List;
 
 public interface TransactionService {

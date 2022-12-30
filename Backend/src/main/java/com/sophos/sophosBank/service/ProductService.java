@@ -1,7 +1,6 @@
 package com.sophos.sophosBank.service;
 
 import com.sophos.sophosBank.entity.Product;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Optional;

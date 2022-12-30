@@ -2,7 +2,6 @@ package com.sophos.sophosBank.service;
 
 import com.sophos.sophosBank.components.Validations;
 import com.sophos.sophosBank.entity.Customer;
-import com.sophos.sophosBank.security.UserDetailServiceImplementation;
 import com.sophos.sophosBank.repository.CustomerRepository;
 import com.sophos.sophosBank.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
