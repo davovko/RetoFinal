@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="row mt-5">
-                <h1>Movimientos de Cuenta N° {{productData?.account_number}}</h1>
+                <h1>Movimientos de Cuenta {{productData?.product_type_id == 1 ? "De Ahorro" : "Corriente"}}  N° {{productData?.account_number}}</h1>
             </div>     
             <div class="row">
                 <div class="col-md-8 mt-5">                
@@ -116,7 +116,7 @@
                     <label for="identificationType">Cuenta Destino</label>
                     <div class="input-group">
                         <select formControlName="destination_product_id" class="form-select" id="destination_product_id">                                                         
-                            <option [ngValue]="null" disabled>Selecione la cuenta destino</option>
+                            <option [ngValue]="null" disabled>Seleccione la cuenta destino</option>
                             <option *ngFor='let product of products' [ngValue]="product.product_id">
                                 {{product.account_number}}
                             </option>                      

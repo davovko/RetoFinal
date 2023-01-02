@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModalDismissReasons, NgbDatepickerModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { CustomerService } from '../customer.service';
 import { Customer } from '../models/customer';
@@ -37,9 +37,9 @@ export class CustomersComponent implements OnInit{
     this.getCustomers();  
   }  
   
-  openModal(content: any, formEnable: boolean){
-    this.form.reset();
-    formEnable ? this.form.enable() : this.form.disable();  
+  openModal(content: any, creation: boolean){
+    this.form.reset();    
+    this.customerInEditon = !creation;
     this.modal.open(content,{size:'xl'})
   }
   saveCustomer(){
@@ -114,8 +114,7 @@ export class CustomersComponent implements OnInit{
         }else{
           Swal.fire('El cliente no se puede eliminar', 'El cliente aun no tiene todos sus productos cancelados', 'error')
         }
-          })
-        
+          })        
       }
     })
   }

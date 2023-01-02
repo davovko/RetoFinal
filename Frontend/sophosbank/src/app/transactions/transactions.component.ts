@@ -56,7 +56,7 @@ export class TransactionsComponent implements OnInit {
   getProducts(){
     this.productsService.getAllProductsByCustomerId(this.customer_id)
     .subscribe(data => {
-      this.products = data.filter(x => x.product_id != this.product_id) ; 
+      this.products = data.filter(x => x.product_id != this.product_id && x.status_account_id != 3) ; 
     })
   }
 

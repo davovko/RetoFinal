@@ -18,6 +18,7 @@
                         <th>Apellidos</th>
                         <th>Email</th>
                         <th>Fecha de Creación</th>
+                        <th>Última de Modificación</th>
                         <th>Opciones</th>
                     </tr>
                 </thead>
@@ -35,11 +36,12 @@
                         <td>{{customer.first_name + " " + (customer.middle_name == null ? "" : customer.middle_name)}}</td>
                         <td>{{customer.email}}</td>
                         <td>{{customer.creation_date | date:'yyyy/MM/dd HH:mm'}}</td>
+                        <td>{{customer.modification_date == null ? "" :customer.modification_date| date:'yyyy/MM/dd HH:mm'}}</td>
                         <td>
                             <div ngbDropdown class="d-inline-block">
                                 <button type="button" class="btn btn-outline-primary" id="dropdown1" ngbDropdownToggle>Gestionar</button>
                                 <div ngbDropdownMenu aria-labelledby="dropdown1">
-                                    <button ngbDropdownItem (click)="openModal(content, true); updateCustomer(customer)">Ver/Editar Cliente</button>                                    
+                                    <button ngbDropdownItem (click)="openModal(content, false); updateCustomer(customer)">Ver/Editar Cliente</button>                                    
                                     <button ngbDropdownItem (click)="deleteCustomer(customer.customer_id)">Eliminar Cliente</button>
                                     <div class="dropdown-divider"></div>
                                     <button ngbDropdownItem [routerLink]="['/products/'+ customer.customer_id]">Ver Cuentas</button>

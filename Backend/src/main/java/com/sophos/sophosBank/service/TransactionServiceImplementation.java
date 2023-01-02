@@ -45,7 +45,7 @@ public class TransactionServiceImplementation implements TransactionService  {
             gmfTransaction.setTransaction_type_id(2);
             gmfTransaction.setProduct_id(oldProduct.get().getProduct_id());
             gmfTransaction.setDescription("COBRO GMF / 4x1000");
-            gmfTransaction.setTransaction_value(transaction.getTransaction_value() * 0.004);
+            gmfTransaction.setTransaction_value(transaction.getTransaction_value() * -0.004);
         }
 
         if(oldProduct.get().getStatus_account_id() == 2 && transaction.getTransaction_type_id() != 1){
@@ -62,7 +62,7 @@ public class TransactionServiceImplementation implements TransactionService  {
                     switch (oldProduct.get().getProduct_type_id()){
                         case 1: // CUENTA DE AHORROS
                             if (availableBalance < Math.abs(transaction.getTransaction_value())){
-                                message = "No se puede realizar la transacción. No tiene saldo disponible";
+                                message = "No tiene saldo disponible. Valor máximo de transacción : $ "+availableBalance;
                                 break;
                             } else{
                                 if(transaction.getDescription() != "COBRO GMF / 4x1000"){
@@ -76,13 +76,14 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 if(!oldProduct.get().isGmf_exempt() && transactionNumber < 2){
                                     transactionNumber++;
                                     createTransaction(gmfTransaction,activeUserId);
+                                    transactionNumber = transactionNumber == 2 ? 1 : transactionNumber;
                                 }
                                 return transaction;
                             }
                         case 2: //CUENTA CORRIENTE
 
                             if((availableBalance - Math.abs(transaction.getTransaction_value())) < maxValue){
-                                message = "No se puede realizar la transacción. No tiene saldo disponible";
+                                message = "No tiene saldo disponible. Valor máximo de transacción : $ "+ Math.abs(maxValue);
                                 break;
                             } else {
 
@@ -102,6 +103,7 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 if(!oldProduct.get().isGmf_exempt() && transactionNumber < 2){
                                     transactionNumber++;
                                     createTransaction(gmfTransaction,activeUserId);
+                                    transactionNumber = transactionNumber == 2 ? 1 : transactionNumber;
                                 }
                                 return transaction;
                             }
@@ -118,7 +120,7 @@ public class TransactionServiceImplementation implements TransactionService  {
                     switch (oldProduct.get().getProduct_type_id()){
                         case 1: // CUENTA DE AHORROS
                             if (availableBalance < Math.abs(transaction.getTransaction_value())){
-                                message = "No se puede realizar la transacción. No tiene saldo disponible";
+                                message = "No tiene saldo disponible. Valor máximo de transacción : $ "+availableBalance;
                                 break;
                             } else{
                                 if(transaction.getDescription() != "COBRO GMF / 4x1000"){
@@ -129,15 +131,17 @@ public class TransactionServiceImplementation implements TransactionService  {
 
                                 transactionRepository.save(transaction);
 
-                                if(!oldProduct.get().isGmf_exempt()){
+                                if(!oldProduct.get().isGmf_exempt() && transactionNumber < 2){
+                                    transactionNumber++;
                                     createTransaction(gmfTransaction,activeUserId);
+                                    transactionNumber = transactionNumber == 2 ? 1 : transactionNumber;
                                 }
                                 createTransaction(destinationTransaction,activeUserId);
                                 return transaction;
                             }
                         case 2: //CUENTA CORRIENTE
                             if((availableBalance - Math.abs(transaction.getTransaction_value())) < maxValue){
-                                message = "No se puede realizar la transacción. No tiene saldo disponible";
+                                message = "No tiene saldo disponible. Valor máximo de transacción : $ " + Math.abs(maxValue);
                                 break;
                             } else {
                                 newProduct.setBalance(oldProduct.get().getBalance() - Math.abs(transaction.getTransaction_value()) - (oldProduct.get().isGmf_exempt() ? 0 : (Math.abs(transaction.getTransaction_value() * 0.004))));
@@ -152,8 +156,10 @@ public class TransactionServiceImplementation implements TransactionService  {
                                 }
                                 transactionRepository.save(transaction);
 
-                                if(!oldProduct.get().isGmf_exempt()){
+                                if(!oldProduct.get().isGmf_exempt() && transactionNumber < 2){
+                                    transactionNumber++;
                                     createTransaction(gmfTransaction,activeUserId);
+                                    transactionNumber = transactionNumber == 2 ? 1 : transactionNumber;
                                 }
                                 createTransaction(destinationTransaction,activeUserId);
 

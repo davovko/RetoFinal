@@ -7,6 +7,7 @@
     balance: number;
     available_balance: number;
     gmf_exempt: boolean;
-    creation_date?: Date;
+    creation_date: Date;
+    modification_date: Date
 }
     
