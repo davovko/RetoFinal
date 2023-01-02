@@ -33,7 +33,7 @@ public class CustomerServiceImplementation implements CustomerService{
 
     @Override
     public Customer createCustomer(Customer customer, int activeUserId) {
-        String message = allValidations(customer);
+        String message = allValidations(customer, 0);
 
         if (message.isEmpty()){
             customer.setIdentification_number(customer.getIdentification_number().trim().toUpperCase());
@@ -52,7 +52,8 @@ public class CustomerServiceImplementation implements CustomerService{
 
     @Override
     public Customer updateCustomer(Customer customer, int customer_id, int activeUserId) {
-        String message = allValidations(customer);
+        String message = allValidations(customer, customer_id);
+        customer.setCustomer_id(customer_id);
 
         if (message.isEmpty()){
             Optional<Customer> oldCustomer = customerRepository.findById(customer_id);
@@ -93,7 +94,7 @@ public class CustomerServiceImplementation implements CustomerService{
         throw new IllegalArgumentException(message);
     }
     @Override
-    public String allValidations(Customer customer){
+    public String allValidations(Customer customer, int customer_id){
         boolean adult = validations.checkAge(customer.getDate_of_birth());
         boolean duplicateIdentification = validations.checkIdentificationNumber(customer.getIdentification_number().trim().toUpperCase(), customer.getIdentification_type_Id(), 0);
         boolean email = validations.checkEmail(customer.getEmail().trim().toLowerCase(), 0);
