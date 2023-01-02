@@ -52,8 +52,8 @@ public class CustomerServiceImplementation implements CustomerService{
 
     @Override
     public Customer updateCustomer(Customer customer, int customer_id, int activeUserId) {
-        String message = allValidations(customer, customer_id);
         customer.setCustomer_id(customer_id);
+        String message = allValidations(customer, customer_id);
 
         if (message.isEmpty()){
             Optional<Customer> oldCustomer = customerRepository.findById(customer_id);
