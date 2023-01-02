@@ -33,7 +33,8 @@ public class CustomerServiceImplementation implements CustomerService{
 
     @Override
     public Customer createCustomer(Customer customer, int activeUserId) {
-        String message = allValidations(customer, 0);
+        customer.setCustomer_id(0);
+        String message = allValidations(customer);
 
         if (message.isEmpty()){
             customer.setIdentification_number(customer.getIdentification_number().trim().toUpperCase());
@@ -53,7 +54,7 @@ public class CustomerServiceImplementation implements CustomerService{
     @Override
     public Customer updateCustomer(Customer customer, int customer_id, int activeUserId) {
         customer.setCustomer_id(customer_id);
-        String message = allValidations(customer, customer_id);
+        String message = allValidations(customer);
 
         if (message.isEmpty()){
             Optional<Customer> oldCustomer = customerRepository.findById(customer_id);
@@ -94,10 +95,10 @@ public class CustomerServiceImplementation implements CustomerService{
         throw new IllegalArgumentException(message);
     }
     @Override
-    public String allValidations(Customer customer, int customer_id){
+    public String allValidations(Customer customer){
         boolean adult = validations.checkAge(customer.getDate_of_birth());
-        boolean duplicateIdentification = validations.checkIdentificationNumber(customer.getIdentification_number().trim().toUpperCase(), customer.getIdentification_type_Id(), 0);
-        boolean email = validations.checkEmail(customer.getEmail().trim().toLowerCase(), 0);
+        boolean duplicateIdentification = validations.checkIdentificationNumber(customer.getIdentification_number().trim().toUpperCase(), customer.getIdentification_type_Id(), customer.getCustomer_id());
+        boolean email = validations.checkEmail(customer.getEmail().trim().toLowerCase(), customer.getCustomer_id());
         boolean validEmail = validations.validEmail(customer.getEmail().trim());
         boolean validName = (customer.getFirst_name().trim().length() >= 2 && customer.getLast_name().trim().length() >= 2 ? true: false);
 

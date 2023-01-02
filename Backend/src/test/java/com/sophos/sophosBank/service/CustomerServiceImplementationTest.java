@@ -84,7 +84,7 @@ class CustomerServiceImplementationTest {
         when(validationsMock.checkEmail(anyString(), anyInt())).thenReturn(true);
         when(validationsMock.validEmail(anyString())).thenReturn(true);
 
-        String response = customerServiceImplementation.allValidations(mockCustomer, mockCustomer.getCustomer_id());
+        String response = customerServiceImplementation.allValidations(mockCustomer);
 
         Assertions.assertEquals("", response);
         Assertions.assertEquals(0, response.length());
@@ -107,7 +107,7 @@ class CustomerServiceImplementationTest {
         when(validationsMock.checkEmail(anyString(), anyInt())).thenReturn(true);
         when(validationsMock.validEmail(anyString())).thenReturn(true);
 
-        String response = customerServiceImplementation.allValidations(mockCustomer, mockCustomer.getCustomer_id());
+        String response = customerServiceImplementation.allValidations(mockCustomer);
 
         Assertions.assertEquals("El cliente es menor de edad. ", response);
     }
