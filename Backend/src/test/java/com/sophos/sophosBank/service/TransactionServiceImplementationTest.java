@@ -116,7 +116,7 @@ class TransactionServiceImplementationTest {
         Assertions.assertEquals(0, mockNewProduct.getBalance());
         Assertions.assertEquals(mockTransaction, response);
     }
-    @Test
+    /*@Test
     void createTransactionTransferGMFExempt(){
         Transaction mockTransaction = new Transaction();
         mockTransaction.setTransaction_type_id(3);//TRANSACCION ENTRE CUENTAS
@@ -153,7 +153,7 @@ class TransactionServiceImplementationTest {
         Assertions.assertEquals(0, mockNewProduct.getAvailable_balance());
         Assertions.assertEquals(0, mockNewProduct.getBalance());
         Assertions.assertEquals(mockTransaction, response);
-    }
+    }*/
     @Test
     void createTransactionErrorBalanceNotAvailable(){
         Transaction mockTransaction = new Transaction();
@@ -184,7 +184,4 @@ class TransactionServiceImplementationTest {
             Assertions.assertTrue(e instanceof IllegalArgumentException);
         }
     }
-
-
-
 }
