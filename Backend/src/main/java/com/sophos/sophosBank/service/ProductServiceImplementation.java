@@ -14,17 +14,38 @@ public class ProductServiceImplementation implements ProductService {
     @Autowired
     ProductRepository productRepository;
     @Override
-    public Product createProduct(Product product) {
+    public List<Product> getAllProductsByCustomerId(int customer_id) {
+        return productRepository.findAllProductsByCustomerId(customer_id);
+    }
+    @Override
+    public Optional<Product> getProductById(int product_id) {
+        return productRepository.findById(product_id);
+    }
+    @Override
+    public Product createProduct(Product product, int activeUserId) {
 
         Product productGmfExempt = productRepository.checkGmfExempt(product.getCustomer_id());
 
         if ( productGmfExempt == null || !product.isGmf_exempt()){
             product.setAccount_number("xx");
             product.setStatus_account_id(1);
-            product.setCreation_user_id(1);
+            product.setCreation_user_id(activeUserId);
             productRepository.save(product);
 
-            product.setAccount_number( newAccountNumber(product.getProduct_id(), product.getProduct_type_id()));
+            String accountNumber = "";
+
+            for (int i = 0; i < (8 - Integer.toString(product.getProduct_id()).length()); i++){
+                accountNumber = accountNumber + "0";
+            }
+
+            switch (product.getProduct_type_id()){
+                case 1: accountNumber = "46" + accountNumber + product.getProduct_id();
+                    break;
+                case 2: accountNumber = "23" + accountNumber + product.getProduct_id();
+                    break;
+            }
+
+            product.setAccount_number(accountNumber);
 
             return productRepository.save(product);
         }
@@ -33,19 +54,8 @@ public class ProductServiceImplementation implements ProductService {
         throw new IllegalArgumentException(message);
 
     }
-
     @Override
-    public List<Product> getAllProductsByCustomerId(int customer_id) {
-        return productRepository.findAllProductsByCustomerId(customer_id);
-    }
-
-    @Override
-    public Optional<Product> getProductById(int product_id) {
-        return productRepository.findById(product_id);
-    }
-
-    @Override
-    public Product updateGmfExempt(int product_id){
+    public Product updateGmfExempt(int product_id, int activeUserId){
 
         Optional<Product> oldProduct = productRepository.findById(product_id);
         Product productGmfExempt = productRepository.checkGmfExempt(oldProduct.get().getCustomer_id());
@@ -56,7 +66,7 @@ public class ProductServiceImplementation implements ProductService {
             newProduct.setGmf_exempt(newState);
             newProduct.setAvailable_balance(oldProduct.get().getBalance() <= 0 ? 0 : newState ? oldProduct.get().getBalance() : Math.round(oldProduct.get().getBalance() - oldProduct.get().getBalance() * 0.004));
             newProduct.setModification_date(LocalDateTime.now());
-            newProduct.setModification_user_id(1);
+            newProduct.setModification_user_id(activeUserId);
 
             return productRepository.save(newProduct);
 
@@ -65,9 +75,8 @@ public class ProductServiceImplementation implements ProductService {
         message = productGmfExempt != null ? "No se puede modificar ya que la cuenta " + productGmfExempt.getAccount_number() + " ya se encuentra exenta GMF." : "";
         throw new IllegalArgumentException(message);
     }
-
     @Override
-    public Product updateStatusAccount(int status_account_id, int product_id){
+    public Product updateStatusAccount(int status_account_id, int product_id, int activeUserId){
 
         Optional<Product> oldProduct = productRepository.findById(product_id);
         String message;
@@ -77,7 +86,7 @@ public class ProductServiceImplementation implements ProductService {
             Product newProduct = oldProduct.get();
             newProduct.setStatus_account_id(status_account_id);
             newProduct.setModification_date(LocalDateTime.now());
-            newProduct.setModification_user_id(1);
+            newProduct.setModification_user_id(activeUserId);
 
             if (status_account_id != 3){ // activar o desactivar
                 return productRepository.save(newProduct);
@@ -96,45 +105,5 @@ public class ProductServiceImplementation implements ProductService {
         throw new IllegalArgumentException(message);
     }
 
-    /*
-    public String newAccountNumber(int product_type_id){
-        int totalProducts = productRepository.countAccounts(product_type_id) + 1;
-        String accountNumber = "";
 
-        for (int i = 0; i < (8 - Integer.toString(totalProducts).length()); i++){
-            accountNumber = accountNumber + "0";
-        }
-
-        switch (product_type_id){
-            case 1: accountNumber = "46" + accountNumber + totalProducts;
-                break;
-            case 2: accountNumber = "23" + accountNumber + totalProducts;
-                break;
-        }
-
-        return accountNumber;
-    }*/
-
-    public String newAccountNumber(int product_id, int product_type_id){
-
-        String accountNumber = "";
-
-        for (int i = 0; i < (8 - Integer.toString(product_id).length()); i++){
-            accountNumber = accountNumber + "0";
-        }
-
-        switch (product_type_id){
-            case 1: accountNumber = "46" + accountNumber + product_id;
-                break;
-            case 2: accountNumber = "23" + accountNumber + product_id;
-                break;
-        }
-
-        return accountNumber;
-    }
-
-
-    public Product checkGmfExempt(int customer_id){
-        return productRepository.checkGmfExempt(customer_id);
-    }
 }

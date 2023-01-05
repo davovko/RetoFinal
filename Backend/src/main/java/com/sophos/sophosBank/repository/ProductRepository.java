@@ -16,6 +16,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query(value = "SELECT * FROM products WHERE customer_id = :customerId ORDER BY status_account_id ASC, balance  DESC ", nativeQuery = true)
     public List<Product> findAllProductsByCustomerId(@Param("customerId") int customer_id);
 
+    @Query(value = "SELECT COUNT(*) FROM products WHERE customer_id = :customerId AND status_account_id != 3", nativeQuery = true)
+    public int findAllActiveProductsByCustomerId(@Param("customerId") int customer_id);
+
     @Query(value = "SELECT COUNT(*) FROM products WHERE product_type_id = :product_type_id", nativeQuery = true)
     public int countAccounts(@Param("product_type_id") int product_type_id);
 

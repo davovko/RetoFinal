@@ -23,6 +23,7 @@ public class Customer {
     private int creation_user_id;
     private LocalDateTime modification_date = null;
     private Integer modification_user_id = null;
+    private boolean status = true;
     public Integer getModification_user_id() {
         return modification_user_id;
     }
@@ -128,5 +129,13 @@ public class Customer {
 
     public void setCreation_user_id(int creation_user_id) {
         this.creation_user_id = creation_user_id;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

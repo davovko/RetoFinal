@@ -6,9 +6,10 @@ import java.util.Optional;
 
 
 public interface CustomerService {
-    public Customer createCustomer(Customer customer);
     public List<Customer> getAllCustomers();
     public Optional<Customer> getCustomerById(int customer_id);
-    public Customer updateCustomer(Customer customer, int customer_id);
-    public boolean deleteCustomerById(int customer_id);
+    public Customer createCustomer(Customer customer, int activeUserId);
+    public Customer updateCustomer(Customer customer, int customer_id, int activeUserId);
+    public boolean deleteCustomerById(int customer_id, int activeUserId);
+    public String allValidations(Customer customer);
 }
